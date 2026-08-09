@@ -5,7 +5,7 @@ import QueryPlanExplainer from './QueryPlanExplainer'
 
 export default function PostgresInternals() {
   return (
-    <article className="prose prose-neutral max-w-2xl mx-auto px-6 py-16">
+    <article className="article-shell prose prose-neutral mx-auto">
       <PostHeader
         title="PostgreSQL storage internals"
         date="2025-08-10"

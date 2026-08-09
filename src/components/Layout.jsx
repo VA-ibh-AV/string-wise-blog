@@ -1,49 +1,76 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+
+const LINKEDIN_URL = 'https://www.linkedin.com/in/vaibhav-bhardwaj-a0554a1b8/'
 
 export default function Layout({ children }) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="site-shell">
       <Nav />
-      <main className="flex-1">
-        {children}
-      </main>
+      <main className="site-main">{children}</main>
       <Footer />
     </div>
   )
 }
 
+function ThemeToggle() {
+  const [theme, setTheme] = useState(() => {
+    const saved = window.localStorage.getItem('string-wise-theme')
+    if (saved) return saved
+    return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  })
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    window.localStorage.setItem('string-wise-theme', theme)
+  }, [theme])
+
+  const isDark = theme === 'dark'
+
+  return (
+    <button
+      type="button"
+      className="theme-toggle"
+      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+      title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+    >
+      {isDark ? (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+        </svg>
+      ) : (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20.6 15.3A8.5 8.5 0 0 1 8.7 3.4 8.5 8.5 0 1 0 20.6 15.3Z" />
+        </svg>
+      )}
+    </button>
+  )
+}
+
 function Nav() {
   return (
-    <header className="border-b border-zinc-200 bg-paper/80 backdrop-blur-sm sticky top-0 z-50">
-      <div className="max-w-2xl mx-auto px-6 h-14 flex items-center justify-between">
-        <Link to="/" className="font-mono text-sm font-bold text-zinc-900 hover:text-accent-600 transition-colors tracking-tight">
-          string-wise
+    <header className="site-header">
+      <div className="site-header-inner">
+        <Link to="/" className="brand">
+          <span className="brand-mark" aria-hidden="true">sw</span>
+          <span>string-wise</span>
+          <span className="brand-context">/ field notes</span>
         </Link>
-        <nav className="flex items-center gap-6">
-          <a
-            href="https://hash.string-wise.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-mono text-xs text-zinc-400 hover:text-zinc-700 transition-colors"
-          >
-            hash ↗
+
+        <nav className="site-nav" aria-label="Primary navigation">
+          <a href="https://hash.string-wise.com" target="_blank" rel="noopener noreferrer" className="nav-link">
+            hash <span>↗</span>
           </a>
-          <a
-            href="https://raft.string-wise.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-mono text-xs text-zinc-400 hover:text-zinc-700 transition-colors"
-          >
-            raft ↗
+          <a href="https://raft.string-wise.com" target="_blank" rel="noopener noreferrer" className="nav-link">
+            raft <span>↗</span>
           </a>
-          <a
-            href="https://www.linkedin.com/in/vaibhav-bhardwaj-a0554a1b8/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-mono text-xs text-zinc-400 hover:text-zinc-700 transition-colors"
-          >
-            linkedin ↗
+          <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" className="nav-link nav-link-linkedin">
+            linkedin <span>↗</span>
           </a>
+          <span className="nav-divider" aria-hidden="true" />
+          <ThemeToggle />
         </nav>
       </div>
     </header>
@@ -52,31 +79,22 @@ function Nav() {
 
 function Footer() {
   return (
-    <footer className="border-t border-zinc-200 mt-20">
-      <div className="max-w-2xl mx-auto px-6 py-10">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div>
-            <p className="font-mono text-sm font-bold text-zinc-900 mb-1">string-wise</p>
-            <p className="text-xs text-zinc-400">
-              Technical writing by{' '}
-              <a href="https://www.linkedin.com/in/vaibhav-bhardwaj-a0554a1b8/" target="_blank" rel="noopener noreferrer" className="text-accent-600 hover:text-accent-700">
-                Vaibhav on LinkedIn
-              </a>
-            </p>
-          </div>
+    <footer className="site-footer">
+      <div className="site-footer-inner">
+        <div>
+          <p className="footer-brand">string-wise<span>.</span></p>
+          <p className="footer-copy">Technical writing by <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer">Vaibhav Bhardwaj ↗</a></p>
+        </div>
 
-          <div className="flex flex-col gap-2">
-            <p className="font-mono text-[10px] text-zinc-400 uppercase tracking-widest">projects</p>
-            <div className="flex gap-4">
-              <a href="https://hash.string-wise.com" target="_blank" rel="noopener noreferrer" className="font-mono text-xs text-zinc-500 hover:text-accent-600 transition-colors">
-                hash.string-wise.com ↗
-              </a>
-              <a href="https://raft.string-wise.com" target="_blank" rel="noopener noreferrer" className="font-mono text-xs text-zinc-500 hover:text-accent-600 transition-colors">
-                raft.string-wise.com ↗
-              </a>
-            </div>
+        <div className="footer-projects">
+          <p className="micro-label">interactive projects</p>
+          <div className="footer-links">
+            <a href="https://hash.string-wise.com" target="_blank" rel="noopener noreferrer">hash.string-wise.com ↗</a>
+            <a href="https://raft.string-wise.com" target="_blank" rel="noopener noreferrer">raft.string-wise.com ↗</a>
           </div>
         </div>
+
+        <p className="footer-end">built for curious engineers<br />© {new Date().getFullYear()}</p>
       </div>
     </footer>
   )

@@ -1,0 +1,10 @@
+services:
+  string-wise-blog:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: string-wise-blog
+    ports:
+      - "3006:80"
+    restart: unless-stopped
+    init: true

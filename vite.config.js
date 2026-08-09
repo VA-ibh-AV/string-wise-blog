@@ -5,5 +5,12 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3006,
+    host: '0.0.0.0',
+    allowedHosts: ['string-wise.com', 'www.string-wise.com'],
+  },
+  preview: {
+    port: 3006,
+    host: '0.0.0.0',
+    allowedHosts: ['string-wise.com', 'www.string-wise.com'],
   },
 })

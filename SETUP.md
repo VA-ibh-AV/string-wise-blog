@@ -106,6 +106,33 @@ src/
 
 ---
 
+## Docker deployment
+
+The production container builds the Vite app once and serves the static output through Nginx. It listens on host port `3006`, supports React Router routes, and uses `restart: unless-stopped` so it comes back after Raspberry Pi reboots.
+
+```bash
+# Build and start in the background
+docker compose up -d --build
+
+# Check status and logs
+docker compose ps
+docker compose logs -f string-wise-blog
+```
+
+Open `http://localhost:3006` or point `string-wise.com` at the Raspberry Pi/reverse proxy that forwards to port `3006`.
+
+Make sure Docker itself starts at boot:
+
+```bash
+sudo systemctl enable --now docker
+```
+
+To update after code changes:
+
+```bash
+docker compose up -d --build
+```
+
 ## Deployment to Vercel
 
 **Prerequisites:**

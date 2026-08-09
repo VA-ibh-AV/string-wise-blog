@@ -33,7 +33,7 @@ Posts are organized as folders. Adding a new post means creating a folder, writi
 | Routing | React Router v6 | Client-side, no server needed |
 | Styling | Tailwind CSS + Typography plugin | Beautiful prose layout, no custom CSS |
 | Syntax highlighting | Shiki | Zero client-side JS, every language |
-| Deployment | Vercel | Auto-deploy on push, custom domain, free |
+| Deployment | Docker + Nginx | Portable production container with automatic restarts |
 
 ---
 
@@ -163,21 +163,14 @@ The point: developers almost never understand why Postgres ignores their index. 
 
 ## Deployment
 
-The project deploys to Vercel. Every push to `main` triggers a production deploy.
+Build and run the production container on the Raspberry Pi. It serves the static app through Nginx on port `3006`, supports direct React Router URLs, and restarts automatically after reboots.
 
 ```bash
-# Local dev
-npm install
-npm run dev
-
-# Production build (what Vercel runs)
-npm run build
+docker compose up -d --build
+docker compose ps
 ```
 
-**Domain setup on Vercel:**
-1. Add `string-wise.com` as a custom domain in the Vercel project settings
-2. Update your DNS A record to point to Vercel's IP
-3. Vercel handles SSL automatically
+Point `string-wise.com` (or your reverse proxy) at the Pi and forward traffic to port `3006`. Enable Docker at boot with `sudo systemctl enable --now docker`. See [SETUP.md](SETUP.md) for the full deployment workflow.
 
 ---
 
