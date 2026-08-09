@@ -1,8 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid,
-  Tooltip, ReferenceLine, ResponsiveContainer, Legend,
-} from 'recharts'
 
 const LIVE_ROWS     = 1_000_000
 const TICK_MS       = 600          // simulation step every 600ms
@@ -35,13 +31,40 @@ function StatusBadge({ status }) {
   )
 }
 
-const CustomTooltip = ({ active, payload, label }) => {
-  if (!active || !payload?.length) return null
+function SimulationChart({ data, threshold, triggers }) {
+  const width = 760
+  const height = 176
+  const padding = { top: 12, right: 18, bottom: 24, left: 54 }
+  const plotWidth = width - padding.left - padding.right
+  const plotHeight = height - padding.top - padding.bottom
+  const minTick = data[0]?.tick ?? 0
+  const maxTick = data[data.length - 1]?.tick ?? 1
+  const maxDead = Math.max(threshold, ...data.map(point => point.dead), 1)
+  const x = tick => padding.left + ((tick - minTick) / Math.max(1, maxTick - minTick)) * plotWidth
+  const y = value => padding.top + (1 - value / maxDead) * plotHeight
+  const points = data.map(point => `${x(point.tick)},${y(point.dead)}`).join(' ')
+  const gridValues = [0, 0.33, 0.66, 1].map(ratio => Math.round(maxDead * ratio))
+
   return (
-    <div className="bg-white border border-zinc-200 rounded-lg px-3 py-2 shadow-sm text-xs font-mono">
-      <p className="text-zinc-400 mb-1">tick {label}</p>
-      <p className="text-accent-600">dead: {fmt(payload[0]?.value ?? 0)}</p>
-    </div>
+    <svg className="sim-chart" viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Dead tuples over time">
+      {gridValues.map(value => (
+        <g key={value}>
+          <line x1={padding.left} x2={width - padding.right} y1={y(value)} y2={y(value)} className="sim-chart-grid" />
+          <text x={padding.left - 8} y={y(value) + 3} textAnchor="end" className="sim-chart-label">{value >= 1000 ? `${Math.round(value / 1000)}k` : value}</text>
+        </g>
+      ))}
+      {triggers.map(tick => (
+        <line key={tick} x1={x(tick)} x2={x(tick)} y1={padding.top} y2={height - padding.bottom} className="sim-chart-trigger" />
+      ))}
+      <line x1={padding.left} x2={width - padding.right} y1={y(threshold)} y2={y(threshold)} className="sim-chart-threshold" />
+      {data.length > 1 && <polyline points={points} className="sim-chart-line" />}
+      {data.length > 0 && (
+        <circle cx={x(data[data.length - 1].tick)} cy={y(data[data.length - 1].dead)} r="3.5" className="sim-chart-dot">
+          <title>tick {data[data.length - 1].tick}: {fmt(data[data.length - 1].dead)} dead tuples</title>
+        </circle>
+      )}
+      <text x={width - padding.right} y={height - 5} textAnchor="end" className="sim-chart-label">tick</text>
+    </svg>
   )
 }
 
@@ -191,53 +214,7 @@ export default function AutovacuumSim() {
             </p>
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height={176}>
-            <LineChart data={chartData} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" vertical={false} />
-              <XAxis
-                dataKey="tick"
-                tick={{ fontSize: 10, fontFamily: '"JetBrains Mono", monospace', fill: '#a1a1aa' }}
-                axisLine={false}
-                tickLine={false}
-                label={{ value: 'tick', position: 'insideBottomRight', offset: -4, fontSize: 10, fill: '#a1a1aa', fontFamily: '"JetBrains Mono", monospace' }}
-              />
-              <YAxis
-                tick={{ fontSize: 10, fontFamily: '"JetBrains Mono", monospace', fill: '#a1a1aa' }}
-                axisLine={false}
-                tickLine={false}
-                width={64}
-                tickFormatter={v => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              {/* Autovacuum trigger lines */}
-              {visibleTriggers.map(t => (
-                <ReferenceLine
-                  key={t}
-                  x={t}
-                  stroke="#4C63D2"
-                  strokeDasharray="4 3"
-                  strokeOpacity={0.6}
-                  label={{ value: '⚡', position: 'top', fontSize: 10 }}
-                />
-              ))}
-              {/* Threshold line */}
-              <ReferenceLine
-                y={threshold}
-                stroke="#ef4444"
-                strokeDasharray="5 3"
-                strokeOpacity={0.5}
-                label={{ value: 'threshold', position: 'insideTopRight', fontSize: 9, fontFamily: '"JetBrains Mono", monospace', fill: '#ef4444' }}
-              />
-              <Line
-                type="monotone"
-                dataKey="dead"
-                stroke="#4C63D2"
-                strokeWidth={2}
-                dot={false}
-                isAnimationActive={false}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          <SimulationChart data={chartData} threshold={threshold} triggers={visibleTriggers} />
         )}
         <p className="font-mono text-[10px] text-zinc-400 mt-2">
           ⚡ blue dashed lines = autovacuum trigger events · red dashed = threshold

@@ -1,7 +1,13 @@
+import { lazy, Suspense } from 'react'
 import PostHeader from '../../components/PostHeader'
-import MVCCVisualizer from './MVCCVisualizer'
-import AutovacuumSim from './AutovacuumSim'
-import QueryPlanExplainer from './QueryPlanExplainer'
+
+const MVCCVisualizer = lazy(() => import('./MVCCVisualizer'))
+const AutovacuumSim = lazy(() => import('./AutovacuumSim'))
+const QueryPlanExplainer = lazy(() => import('./QueryPlanExplainer'))
+
+function VisualizerFallback() {
+  return <div className="viz-card viz-loading" aria-label="Loading interactive visualizer">loading interactive visualizer…</div>
+}
 
 export default function PostgresInternals() {
   return (
@@ -42,7 +48,7 @@ export default function PostgresInternals() {
           Play with the visualizer below. Watch what happens to live and dead tuple counts as you INSERT, UPDATE, and DELETE. Then press VACUUM to reclaim the space.
         </p>
 
-        <MVCCVisualizer />
+        <Suspense fallback={<VisualizerFallback />}><MVCCVisualizer /></Suspense>
 
         <h3>Understanding the simulator</h3>
         <ul>
@@ -81,7 +87,7 @@ export default function PostgresInternals() {
           Run the simulation below. Try increasing the UPDATE rate while keeping the default scale factor. Watch autovacuum trigger, but dead tuples still climb. This is production table bloat.
         </p>
 
-        <AutovacuumSim />
+        <Suspense fallback={<VisualizerFallback />}><AutovacuumSim /></Suspense>
 
         <h3>Fixing autovacuum in production</h3>
         <p>
@@ -130,7 +136,7 @@ export default function PostgresInternals() {
           Use the visualizer below. Set a large table and low selectivity (e.g., 500k rows, 0.5% match). Watch the planner choose index scan. Now increase selectivity to 2% — the planner flips to sequential scan. At what point does it flip? That's your crossover selectivity.
         </p>
 
-        <QueryPlanExplainer />
+        <Suspense fallback={<VisualizerFallback />}><QueryPlanExplainer /></Suspense>
 
         <h3>The cost model in real queries</h3>
         <p>
@@ -210,7 +216,7 @@ ALTER TABLE orders SET (
         <h2>What to monitor</h2>
 
         <p>
-          In your PulseOps metrics, track:
+          In your Dashboard metrics, track:
         </p>
 
         <ul>
