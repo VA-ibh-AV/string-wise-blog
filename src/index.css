@@ -21,6 +21,23 @@
   --shadow: 0 24px 60px -42px rgba(23, 49, 88, 0.48);
   --font-display: 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* Code surface stays dark in both themes — it reads as a terminal either way.
+     Token colours are checked against #0d1522 for WCAG AA at 13px. */
+  --code-bg: #0d1522;
+  --code-bar: #121c2c;
+  --code-border: #22314a;
+  --code-fg: #dbe6f5;
+  --code-faint: #7f93ae;
+  --code-accent: #7fb4ff;
+  --code-comment: #6c8199;
+  --code-punct: #93a6bf;
+  --code-red: #ff8b8b;
+  --code-orange: #ffb583;
+  --code-green: #7fdba8;
+  --code-cyan: #6fd3d9;
+  --code-yellow: #ffd580;
+  --code-purple: #c3a6ff;
 }
 
 :root[data-theme='dark'] {
@@ -40,6 +57,12 @@
   --accent-strong: #9abaff;
   --green: #46d6a7;
   --shadow: 0 24px 70px -34px rgba(0, 0, 0, 0.85);
+
+  /* Slightly deeper than the light theme's code surface so the block still
+     separates from the already-dark page background. */
+  --code-bg: #060a12;
+  --code-bar: #0b1220;
+  --code-border: #1c2942;
 }
 
 @layer base {
@@ -242,8 +265,55 @@
   .article-shell.prose p, .article-shell.prose li { color: var(--ink-dim); }
   .article-shell.prose strong { color: var(--ink); }
   .article-shell.prose code { background: var(--surface-muted); border: 1px solid var(--border-soft); border-radius: 5px; padding: 2px 5px; color: var(--accent); }
-  .article-shell.prose pre { width: 100%; max-width: 100%; min-width: 0; overflow-x: auto; overflow-y: hidden; white-space: pre-wrap; overflow-wrap: anywhere; border: 1px solid var(--border); box-shadow: var(--shadow); }
-  .article-shell.prose pre code { white-space: inherit; overflow-wrap: inherit; }
+  /* Code must NOT wrap: pre-wrap + overflow-wrap:anywhere breaks mid-token and
+     destroys indentation and ASCII diagrams. Long lines scroll instead. */
+  .article-shell.prose pre { width: 100%; max-width: 100%; min-width: 0; overflow-x: auto; overflow-y: hidden; white-space: pre; border: 1px solid var(--border); box-shadow: var(--shadow); }
+  .article-shell.prose pre code { white-space: inherit; }
+
+  /* Code blocks */
+  .code-block { margin: 26px 0; border: 1px solid var(--code-border); border-radius: 12px; overflow: hidden; background: var(--code-bg); box-shadow: var(--shadow); }
+  .code-block-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 14px; border-bottom: 1px solid var(--code-border); background: var(--code-bar); }
+  .code-block-lang { color: var(--code-faint); font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+  .code-block-copy { padding: 3px 9px; border: 1px solid var(--code-border); border-radius: 6px; background: transparent; color: var(--code-faint); font-family: var(--font-mono); font-size: 10px; cursor: pointer; transition: color 150ms ease, border-color 150ms ease; }
+  .code-block-copy:hover { color: var(--code-accent); border-color: var(--code-accent); }
+  .code-block-pre.code-block-pre { margin: 0; padding: 16px 18px; border: 0; border-radius: 0; box-shadow: none; background: var(--code-bg); color: var(--code-fg); font-family: var(--font-mono); font-size: 13px; line-height: 1.7; tab-size: 2; overflow-x: auto; white-space: pre; }
+  .code-block-pre code { display: block; min-width: max-content; padding: 0; background: none; border: 0; font-family: inherit; font-size: inherit; color: inherit; }
+  .code-block-pre::-webkit-scrollbar { height: 8px; }
+  .code-block-pre::-webkit-scrollbar-thumb { background: var(--code-border); border-radius: 8px; }
+
+  /* Prism tokens — one palette, tuned per theme below */
+  .code-block-pre .token.comment,
+  .code-block-pre .token.prolog,
+  .code-block-pre .token.doctype,
+  .code-block-pre .token.cdata { color: var(--code-comment); font-style: italic; }
+  .code-block-pre .token.punctuation { color: var(--code-punct); }
+  .code-block-pre .token.property,
+  .code-block-pre .token.tag,
+  .code-block-pre .token.constant,
+  .code-block-pre .token.symbol,
+  .code-block-pre .token.deleted { color: var(--code-red); }
+  .code-block-pre .token.boolean,
+  .code-block-pre .token.number { color: var(--code-orange); }
+  .code-block-pre .token.selector,
+  .code-block-pre .token.attr-name,
+  .code-block-pre .token.string,
+  .code-block-pre .token.char,
+  .code-block-pre .token.builtin,
+  .code-block-pre .token.inserted { color: var(--code-green); }
+  .code-block-pre .token.operator,
+  .code-block-pre .token.entity,
+  .code-block-pre .token.url,
+  .code-block-pre .token.variable { color: var(--code-cyan); }
+  .code-block-pre .token.atrule,
+  .code-block-pre .token.attr-value,
+  .code-block-pre .token.function,
+  .code-block-pre .token.class-name { color: var(--code-yellow); }
+  .code-block-pre .token.keyword { color: var(--code-purple); }
+  .code-block-pre .token.regex,
+  .code-block-pre .token.important { color: var(--code-orange); }
+  .code-block-pre .token.important,
+  .code-block-pre .token.bold { font-weight: 600; }
+  .code-block-pre .token.italic { font-style: italic; }
   .not-found { width: min(1120px, calc(100% - 48px)); margin: 0 auto; padding: 140px 0; text-align: center; }
   .not-found h1 { margin: 14px 0 24px; color: var(--ink); font-family: var(--font-mono); font-size: 34px; letter-spacing: -.07em; }
 

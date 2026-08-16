@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import PostHeader from '../../components/PostHeader'
+import CodeBlock from '../../components/CodeBlock'
 
 const MVCCVisualizer = lazy(() => import('./MVCCVisualizer'))
 const AutovacuumSim = lazy(() => import('./AutovacuumSim'))
@@ -94,10 +95,10 @@ export default function PostgresInternals() {
           When you see <code>postgresql.dead_tuples</code> climbing and <code>postgresql.autovacuum.running</code> constantly 1, autovacuum is losing. The fix is per-table tuning:
         </p>
 
-        <pre className="not-prose"><code className="language-sql">ALTER TABLE orders SET (
+        <CodeBlock lang="sql" code={`ALTER TABLE orders SET (
   autovacuum_vacuum_scale_factor = 0.01,
   autovacuum_vacuum_cost_delay = 1
-);</code></pre>
+);`} />
 
         <p>
           This makes autovacuum trigger at 1% bloat (not 20%) and backs off less aggressively. On high-churn tables like <code>events</code> or <code>audit_log</code>, this is often necessary.
@@ -143,10 +144,10 @@ export default function PostgresInternals() {
           Run <code>EXPLAIN</code> on a slow query. You'll see:
         </p>
 
-        <pre className="not-prose"><code className="language-sql">EXPLAIN SELECT * FROM users WHERE status = 'active';
+        <CodeBlock lang="sql" code={`EXPLAIN SELECT * FROM users WHERE status = 'active';
 
 Seq Scan on users  (cost=0.00..45000.00 rows=50000)
-  Filter: (status = 'active')</code></pre>
+  Filter: (status = 'active')`} />
 
         <p>
           That <code>cost=0.00..45000.00</code> is Postgres saying: "Full scan is going to cost about 45,000 units." The planner weighed this against the index scan alternative and chose the lower number.
@@ -198,14 +199,14 @@ Seq Scan on users  (cost=0.00..45000.00 rows=50000)
           The fix:
         </p>
 
-        <pre className="not-prose"><code className="language-sql">-- Quick fix: manual vacuum
+        <CodeBlock lang="sql" code={`-- Quick fix: manual vacuum
 VACUUM ANALYZE orders;
 
 -- Long-term: tune autovacuum for this table
 ALTER TABLE orders SET (
   autovacuum_vacuum_scale_factor = 0.05,
   autovacuum_vacuum_cost_delay = 0
-);</code></pre>
+);`} />
 
         <p>
           Queries drop back to 200ms. Root cause: table structure didn't change, queries didn't change, data didn't change — but invisible disk bloat made the planner's best guess wrong.
@@ -247,9 +248,9 @@ ALTER TABLE orders SET (
           And measure your <code>random_page_cost</code>. If you're on SSD, the default 4.0 is costing you index usage. Set it to 1.1 and re-ANALYZE:
         </p>
 
-        <pre className="not-prose"><code className="language-sql">ALTER SYSTEM SET random_page_cost = 1.1;
+        <CodeBlock lang="sql" code={`ALTER SYSTEM SET random_page_cost = 1.1;
 SELECT pg_reload_conf();
-ANALYZE;  -- rebuild planner stats</code></pre>
+ANALYZE;  -- rebuild planner stats`} />
 
         <p>
           Your index usage will improve immediately.

@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import PostHeader from '../../components/PostHeader'
+import CodeBlock from '../../components/CodeBlock'
 
 const PartitionFlow      = lazy(() => import('./PartitionFlow'))
 const LogSegmentExplorer = lazy(() => import('./LogSegmentExplorer'))
@@ -59,13 +60,13 @@ export default function KafkaInternals() {
           On disk, a partition directory looks like this:
         </p>
 
-        <pre className="not-prose"><code>{`/var/lib/kafka/data/events-0/
+        <CodeBlock lang="text" code={`/var/lib/kafka/data/events-0/
   00000000000000000000.log        # records 0..8191
   00000000000000000000.index      # sparse: relative offset -> byte position
   00000000000000000000.timeindex  # sparse: timestamp -> relative offset
   00000000000000008192.log        # the active segment, still being written
   00000000000000008192.index
-  leader-epoch-checkpoint`}</code></pre>
+  leader-epoch-checkpoint`} />
 
         <p>
           The filename is the <strong>base offset</strong> — the offset of the first record in that segment. Only the newest segment is open for writes; the rest are sealed. That single design choice is why retention is cheap: deleting old data means unlinking whole files, never rewriting anything.
@@ -91,10 +92,10 @@ export default function KafkaInternals() {
           The consequence of this design is the feature everyone eventually needs: <strong>re-reading</strong>. Because reads don't consume, resetting a consumer group to an earlier offset replays history exactly as it happened.
         </p>
 
-        <pre className="not-prose"><code className="language-bash">{`# replay a bad deploy's worth of events
+        <CodeBlock lang="bash" code={`# replay a bad deploy's worth of events
 kafka-consumer-groups.sh --bootstrap-server localhost:9092 \\
   --group billing-worker --topic events --reset-offsets \\
-  --to-datetime 2025-08-16T02:00:00.000 --execute`}</code></pre>
+  --to-datetime 2025-08-16T02:00:00.000 --execute`} />
 
         <p>
           That <code>--to-datetime</code> is served by <code>.timeindex</code>, the same sparse-lookup trick keyed on timestamp instead of offset. Rebuild a corrupted downstream store, backfill a new service, re-run a fixed aggregation — all of it is the same operation: move a number and read again.
@@ -125,14 +126,14 @@ kafka-consumer-groups.sh --bootstrap-server localhost:9092 \\
           The handshake is two phases:
         </p>
 
-        <pre className="not-prose"><code>{`consumer                       coordinator (broker)
+        <CodeBlock lang="text" code={`consumer                       coordinator (broker)
    |-- FindCoordinator --------->|
    |-- JoinGroup --------------->|   collects members until all arrive
    |<-- JoinGroup response ------|   one member marked leader, given member list
    |-- SyncGroup (leader: full   |
    |   assignment; others: {}) ->|
    |<-- SyncGroup response ------|   each member gets only its own partitions
-   |-- Heartbeat (every 3s) ---->|`}</code></pre>
+   |-- Heartbeat (every 3s) ---->|`} />
 
         <p>
           Where do the committed offsets themselves live? In <code>__consumer_offsets</code>, an ordinary Kafka topic with 50 partitions — no special storage engine, no database. A commit is just a produce to it, keyed by <code>(group, topic, partition)</code>. And because that topic is <strong>compacted</strong> rather than time-retained, the latest value for every key survives forever while the history is collapsed away. That's why your group's position survives a broker restart, and why the offsets topic doesn't grow without bound despite every consumer writing to it every few seconds. Part 5 covers the mechanism.
@@ -203,7 +204,7 @@ kafka-consumer-groups.sh --bootstrap-server localhost:9092 \\
           Two rebalances instead of one, but the first revokes nothing. Members compute the new assignment, diff it against what they hold, and only give up the partitions that genuinely change hands. The second rebalance hands those out. Everything else never stops.
         </p>
 
-        <pre className="not-prose"><code className="language-properties">{`partition.assignment.strategy=org.apache.kafka.clients.consumer.CooperativeStickyAssignor`}</code></pre>
+        <CodeBlock lang="properties" code={`partition.assignment.strategy=org.apache.kafka.clients.consumer.CooperativeStickyAssignor`} />
 
         <p>
           One migration caveat that has burned plenty of teams: you cannot flip this in a single rolling restart. Deploy once with <strong>both</strong> assignors listed (<code>CooperativeStickyAssignor,RangeAssignor</code>), let the whole group land on that build, then deploy again with only the cooperative one. The group negotiates the common protocol; if you jump straight there, members disagree and the group won't stabilise.
@@ -226,7 +227,7 @@ kafka-consumer-groups.sh --bootstrap-server localhost:9092 \\
           The group burns its entire day rebalancing and processes nothing. Lag goes vertical. The fixes, in order of how often they're the actual answer:
         </p>
 
-        <pre className="not-prose"><code className="language-properties">{`# 1. process less per poll — the single highest-leverage knob
+        <CodeBlock lang="properties" code={`# 1. process less per poll — the single highest-leverage knob
 max.poll.records=100
 
 # 2. give slow batches room, but not so much that dead consumers linger
@@ -237,7 +238,7 @@ group.instance.id=worker-3        # static membership
 session.timeout.ms=45000
 
 # 4. wait for stragglers before assigning, so one restart = one rebalance
-group.initial.rebalance.delay.ms=3000`}</code></pre>
+group.initial.rebalance.delay.ms=3000`} />
 
         <p>
           <strong>Static membership</strong> deserves the callout. With <code>group.instance.id</code> set, a consumer that disappears and comes back within <code>session.timeout.ms</code> reclaims exactly its old partitions and <em>no rebalance happens at all</em>. For a StatefulSet doing a rolling restart, that turns N rebalances into zero. Pair it with a session timeout comfortably longer than your pod restart time.
@@ -282,9 +283,9 @@ group.initial.rebalance.delay.ms=3000`}</code></pre>
           Here's the trap: <strong><code>acks=all</code> alone does not make you durable.</strong> If the ISR has shrunk to just the leader, then "all ISR members" is one broker, and <code>acks=all</code> degrades silently to <code>acks=1</code>. The setting that closes that hole is broker- or topic-side:
         </p>
 
-        <pre className="not-prose"><code className="language-bash">{`# topic must have >= 2 in-sync replicas or produces are rejected outright
+        <CodeBlock lang="bash" code={`# topic must have >= 2 in-sync replicas or produces are rejected outright
 kafka-configs.sh --alter --entity-type topics --entity-name events \\
-  --add-config min.insync.replicas=2`}</code></pre>
+  --add-config min.insync.replicas=2`} />
 
         <p>
           With <code>replication.factor=3</code>, <code>min.insync.replicas=2</code> and <code>acks=all</code>, you can lose one broker and keep writing, lose two and start getting <code>NOT_ENOUGH_REPLICAS</code> — which is the correct behaviour. A rejected write is an incident you can see; a silently unreplicated write is one you discover a week later.
@@ -342,11 +343,11 @@ kafka-configs.sh --alter --entity-type topics --entity-name events \\
           A record with a <code>null</code> value is a <strong>tombstone</strong>: it means "this key is deleted." The cleaner keeps it around for <code>delete.retention.ms</code> (default 24h) before purging it, and that window exists for one specific reason — a consumer rebuilding state from offset 0 must observe the deletion. Purge tombstones too aggressively and a slow bootstrap misses the delete entirely, resurrecting rows that should be gone.
         </p>
 
-        <pre className="not-prose"><code className="language-bash">{`kafka-topics.sh --create --topic user-profiles --partitions 12 \\
+        <CodeBlock lang="bash" code={`kafka-topics.sh --create --topic user-profiles --partitions 12 \\
   --config cleanup.policy=compact \\
   --config min.cleanable.dirty.ratio=0.1 \\   # compact aggressively (default 0.5)
   --config segment.ms=3600000 \\               # roll hourly so compaction can run
-  --config delete.retention.ms=86400000       # 24h for consumers to see tombstones`}</code></pre>
+  --config delete.retention.ms=86400000       # 24h for consumers to see tombstones`} />
 
         <p>
           You can also set <code>cleanup.policy=compact,delete</code> — keep the latest value per key <em>and</em> drop anything older than the retention window. That's the right choice for a state topic where truly ancient keys are worthless.
@@ -382,7 +383,7 @@ kafka-configs.sh --alter --entity-type topics --entity-name events \\
           Idempotence protects one producer session writing to one partition. Transactions extend that to <strong>many partitions, many topics, and the consumer's own offsets, atomically</strong>.
         </p>
 
-        <pre className="not-prose"><code className="language-go">{`// confluent-kafka-go/v2. InitTransactions fences any zombie still holding
+        <CodeBlock lang="go" code={`// confluent-kafka-go/v2. InitTransactions fences any zombie still holding
 // this transactional.id — it must run once, before the loop.
 if err := producer.InitTransactions(ctx); err != nil {
     log.Fatalf("init transactions: %v", err)
@@ -433,7 +434,7 @@ func processBatch(ctx context.Context, p *kafka.Producer, c *kafka.Consumer,
     }
 
     return p.CommitTransaction(ctx)
-}`}</code></pre>
+}`} />
 
         <p>
           That <code>SendOffsetsToTransaction</code> call is what makes read-process-write atomic. The consumer offset commit is written into <code>__consumer_offsets</code> as part of the transaction, so "I produced the output" and "I marked the input consumed" either both happen or neither does. Without it you have two separate commits and a window between them.
@@ -453,14 +454,14 @@ func processBatch(ctx context.Context, p *kafka.Producer, c *kafka.Consumer,
 
         <h3>The four settings, and the one caveat</h3>
 
-        <pre className="not-prose"><code className="language-properties">{`# producer
+        <CodeBlock lang="properties" code={`# producer
 enable.idempotence=true
 transactional.id=order-enricher-3      # MUST be stable across restarts
 transaction.timeout.ms=60000
 
 # consumer
 isolation.level=read_committed
-enable.auto.commit=false               # non-negotiable — offsets go via the transaction`}</code></pre>
+enable.auto.commit=false               # non-negotiable — offsets go via the transaction`} />
 
         <p>
           <code>transactional.id</code> must be stable per logical task and unique across instances. That's what fences zombies: when a new instance calls <code>initTransactions()</code> with an existing id, the coordinator bumps the producer epoch, and the old instance's next write fails with <code>ProducerFencedException</code> instead of corrupting the stream.
