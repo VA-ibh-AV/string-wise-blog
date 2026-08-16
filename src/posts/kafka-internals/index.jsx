@@ -43,6 +43,9 @@ export default function KafkaInternals() {
         <p>
           That single fact is the source of most Kafka design mistakes. If you need two events ordered with respect to each other, they must share a key. If they don't share a key, you cannot get that ordering back downstream, no matter how many consumers you throw at it.
         </p>
+        <p>
+          That widget is the whole machine in miniature — a producer picking a partition, a log accepting the write, a consumer walking behind it. The rest of this post opens it up one layer at a time, starting with the thing everything else is built on.
+        </p>
       </section>
 
       <section>
@@ -130,6 +133,10 @@ kafka-consumer-groups.sh --bootstrap-server localhost:9092 \\
    |   assignment; others: {}) ->|
    |<-- SyncGroup response ------|   each member gets only its own partitions
    |-- Heartbeat (every 3s) ---->|`}</code></pre>
+
+        <p>
+          Where do the committed offsets themselves live? In <code>__consumer_offsets</code>, an ordinary Kafka topic with 50 partitions — no special storage engine, no database. A commit is just a produce to it, keyed by <code>(group, topic, partition)</code>. And because that topic is <strong>compacted</strong> rather than time-retained, the latest value for every key survives forever while the history is collapsed away. That's why your group's position survives a broker restart, and why the offsets topic doesn't grow without bound despite every consumer writing to it every few seconds. Part 5 covers the mechanism.
+        </p>
 
         <p>
           Move the sliders below. Watch what happens to the "partitions moved" counter as you switch strategies — that number is the cost of the rebalance you just triggered.
@@ -375,26 +382,65 @@ kafka-configs.sh --alter --entity-type topics --entity-name events \\
           Idempotence protects one producer session writing to one partition. Transactions extend that to <strong>many partitions, many topics, and the consumer's own offsets, atomically</strong>.
         </p>
 
-        <pre className="not-prose"><code className="language-java">{`producer.initTransactions();   // fences any zombie with this transactional.id
+        <pre className="not-prose"><code className="language-go">{`// confluent-kafka-go/v2. InitTransactions fences any zombie still holding
+// this transactional.id — it must run once, before the loop.
+if err := producer.InitTransactions(ctx); err != nil {
+    log.Fatalf("init transactions: %v", err)
+}
 
-while (true) {
-    ConsumerRecords<K, V> records = consumer.poll(Duration.ofMillis(200));
-    producer.beginTransaction();
-    try {
-        for (ConsumerRecord<K, V> r : records) {
-            producer.send(new ProducerRecord<>("orders-enriched", enrich(r)));
-            producer.send(new ProducerRecord<>("audit", audit(r)));
-        }
-        // the input offsets join the SAME transaction — this is the whole trick
-        producer.sendOffsetsToTransaction(offsetsOf(records), consumer.groupMetadata());
-        producer.commitTransaction();
-    } catch (KafkaException e) {
-        producer.abortTransaction();   // outputs AND offsets roll back together
+for {
+    msgs := drain(consumer, 500*time.Millisecond, 1000)
+    if len(msgs) == 0 {
+        continue
     }
+    if err := processBatch(ctx, producer, consumer, msgs); err != nil {
+        log.Printf("batch aborted, will be reprocessed: %v", err)
+    }
+}
+
+func processBatch(ctx context.Context, p *kafka.Producer, c *kafka.Consumer,
+    msgs []*kafka.Message) error {
+
+    if err := p.BeginTransaction(); err != nil {
+        return err
+    }
+
+    // Every failure past this point must abort, or the transaction hangs open
+    // and read_committed consumers stall behind the LSO until it times out.
+    abort := func(err error) error {
+        p.AbortTransaction(ctx) // outputs AND offsets roll back together
+        return err
+    }
+
+    for _, m := range msgs {
+        if err := p.Produce(enrich(m), nil); err != nil {
+            return abort(err)
+        }
+        if err := p.Produce(audit(m), nil); err != nil {
+            return abort(err)
+        }
+    }
+
+    meta, err := c.GetConsumerGroupMetadata()
+    if err != nil {
+        return abort(err)
+    }
+
+    // The input offsets join the SAME transaction. This is the whole trick.
+    // Note nextOffsets returns last-read + 1 — the offset to resume FROM.
+    if err := p.SendOffsetsToTransaction(ctx, nextOffsets(msgs), meta); err != nil {
+        return abort(err)
+    }
+
+    return p.CommitTransaction(ctx)
 }`}</code></pre>
 
         <p>
-          That <code>sendOffsetsToTransaction</code> line is what makes read-process-write atomic. The consumer offset commit is written into <code>__consumer_offsets</code> as part of the transaction, so "I produced the output" and "I marked the input consumed" either both happen or neither does. Without it you have two separate commits and a window between them.
+          That <code>SendOffsetsToTransaction</code> call is what makes read-process-write atomic. The consumer offset commit is written into <code>__consumer_offsets</code> as part of the transaction, so "I produced the output" and "I marked the input consumed" either both happen or neither does. Without it you have two separate commits and a window between them.
+        </p>
+
+        <p>
+          Go's explicit error handling makes the shape of this clearer than the Java equivalent does: <strong>every path out of the transaction is either a commit or an abort, never a return.</strong> Leaking out without calling one of them leaves the transaction open, and every <code>read_committed</code> consumer on those partitions blocks behind the LSO until <code>transaction.timeout.ms</code> expires.
         </p>
 
         <p>
@@ -453,8 +499,17 @@ enable.auto.commit=false               # non-negotiable — offsets go via the t
         </p>
 
         <p>
-          Almost every Kafka production surprise traces back to one of six misunderstandings: thinking it's a queue, thinking messages are balanced instead of partitions, not knowing a rebalance stops the world, thinking <code>acks=all</code> is sufficient on its own, confusing compaction with retention, or expecting exactly-once to extend past Kafka's boundary.
+          Almost every Kafka production surprise traces back to one of six misunderstandings — one per section of this post:
         </p>
+
+        <ol>
+          <li><strong>Thinking it's a queue.</strong> It's a log. Reads don't consume, which is why replay is free and fan-out is cheap.</li>
+          <li><strong>Thinking Kafka balances messages.</strong> It balances <em>partitions</em>. That's why your ninth consumer on an eight-partition topic does nothing at all.</li>
+          <li><strong>Not knowing a rebalance stops the world.</strong> Under the eager protocol, partitions that were never going to move stop anyway.</li>
+          <li><strong>Thinking <code>acks=all</code> is enough on its own.</strong> Without <code>min.insync.replicas</code>, a shrunken ISR silently downgrades it to <code>acks=1</code>.</li>
+          <li><strong>Confusing compaction with retention.</strong> One is keyed and keeps the latest value forever; the other is timed and deletes whole segments. They're orthogonal, and you can run both.</li>
+          <li><strong>Expecting exactly-once to cross Kafka's boundary.</strong> It doesn't. The moment you write to Postgres, you're back to needing an idempotent write.</li>
+        </ol>
 
         <p>
           Play with the visualizers until each one feels obvious. Then go and look at your consumer group's rebalance rate.
