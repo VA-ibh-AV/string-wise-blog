@@ -272,6 +272,27 @@
   .tuple-live { @apply rounded-lg; background: color-mix(in srgb, var(--green) 12%, var(--surface-solid)); border: 1px solid color-mix(in srgb, var(--green) 40%, var(--border)); color: var(--green); }
   .tuple-dead { @apply rounded-lg line-through opacity-60; background: color-mix(in srgb, #ef4444 10%, var(--surface-solid)); border: 1px solid color-mix(in srgb, #ef4444 35%, var(--border)); color: #ef6b73; }
   .tuple-empty { @apply border border-dashed rounded-lg; border-color: var(--border); }
+
+  /* Kafka post — theme-aware chips, panels and timeline cells */
+  .k-panel { @apply rounded-xl border p-3; border-color: var(--border-soft); background: var(--surface-muted); }
+  .k-panel-active { border-color: color-mix(in srgb, var(--accent) 55%, var(--border)); background: color-mix(in srgb, var(--accent) 9%, var(--surface-solid)); }
+  .k-chip { @apply rounded-lg border flex flex-col items-center justify-center transition-all duration-300; border-color: var(--border); background: var(--surface-solid); color: var(--ink-faint); }
+  .k-chip-hl { border-color: color-mix(in srgb, var(--accent) 55%, var(--border)); background: color-mix(in srgb, var(--accent) 14%, var(--surface-solid)); color: var(--accent-strong); }
+  .k-chip-ok { border-color: color-mix(in srgb, var(--green) 45%, var(--border)); background: color-mix(in srgb, var(--green) 12%, var(--surface-solid)); color: var(--green); }
+  .k-chip-warn { border-color: color-mix(in srgb, #f59e0b 45%, var(--border)); background: color-mix(in srgb, #f59e0b 12%, var(--surface-solid)); color: #d08700; }
+  .k-chip-bad { border-color: color-mix(in srgb, #ef4444 40%, var(--border)); background: color-mix(in srgb, #ef4444 12%, var(--surface-solid)); color: #ef6b73; }
+  .k-chip-dashed { @apply rounded-lg border border-dashed flex items-center justify-center; border-color: color-mix(in srgb, var(--accent) 50%, var(--border)); color: var(--accent); }
+  .k-tag { @apply font-mono text-[10px] px-2 py-1 rounded-md border; border-color: var(--border); background: var(--surface-solid); color: var(--ink-dim); }
+  .k-tag-hl { border-color: color-mix(in srgb, var(--accent) 55%, var(--border)); background: color-mix(in srgb, var(--accent) 14%, var(--surface-solid)); color: var(--accent-strong); }
+  .k-tag-ok { border-color: color-mix(in srgb, var(--green) 45%, var(--border)); background: color-mix(in srgb, var(--green) 12%, var(--surface-solid)); color: var(--green); }
+  .k-cell { @apply h-6 rounded-[3px] transition-colors duration-200; }
+  .k-cell-active { background: color-mix(in srgb, var(--green) 62%, transparent); }
+  .k-cell-paused { background: color-mix(in srgb, #ef4444 58%, transparent); }
+  .k-cell-idle { background: var(--surface-muted); border: 1px solid var(--border-soft); }
+  .k-muted { color: var(--ink-faint); }
+  .k-dim { color: var(--ink-dim); }
+  .k-strong { color: var(--ink); }
+  .k-hr { border-color: var(--border-soft); }
 }
 
 /* The article and simulators contain Tailwind utility classes from the original UI.

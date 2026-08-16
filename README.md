@@ -44,11 +44,21 @@ string-wise-blog/
 │
 ├── src/
 │   ├── posts/
-│   │   └── postgres-internals/
+│   │   ├── postgres-internals/
+│   │   │   ├── index.jsx              # Post prose + layout
+│   │   │   ├── MVCCVisualizer.jsx     # Live/dead tuple simulation
+│   │   │   ├── AutovacuumSim.jsx      # Real-time autovacuum race simulation
+│   │   │   └── QueryPlanExplainer.jsx # Seq scan vs index scan cost model
+│   │   │
+│   │   └── kafka-internals/
 │   │       ├── index.jsx              # Post prose + layout
-│   │       ├── MVCCVisualizer.jsx     # Live/dead tuple simulation
-│   │       ├── AutovacuumSim.jsx      # Real-time autovacuum race simulation
-│   │       └── QueryPlanExplainer.jsx # Seq scan vs index scan cost model
+│   │       ├── PartitionFlow.jsx      # Hero — partitioner, append, consumer lag
+│   │       ├── LogSegmentExplorer.jsx # Segment files + sparse .index offset lookup
+│   │       ├── ConsumerGroupSim.jsx   # Group assignment across four assignors
+│   │       ├── RebalanceRace.jsx      # Eager vs cooperative rebalance timelines
+│   │       ├── ISRReplication.jsx     # 3-broker ISR, acks, high watermark
+│   │       ├── LogCompaction.jsx      # Log cleaner pass + tombstones
+│   │       └── ExactlyOnceSim.jsx     # Idempotent producer + transaction/LSO
 │   │
 │   ├── components/
 │   │   ├── Layout.jsx                 # Nav, footer, reading width wrapper
@@ -124,10 +134,8 @@ That's it. Push to main. Vercel deploys in ~25 seconds.
 ## Posts Roadmap
 
 ### Published
-_None yet — first post incoming._
-
-### In Progress
 - **PostgreSQL Storage Internals** — MVCC, dead tuples, autovacuum, and query planning demystified with three embedded interactive visualizers.
+- **Kafka Beyond the Basics** — the log on disk, consumer group assignment, rebalancing, ISR and the high watermark, log compaction, and exactly-once, with seven embedded visualizers.
 
 ### Planned
 - Consistent hashing — deep-dive companion to [hash.string-wise.com](https://hash.string-wise.com)
@@ -158,6 +166,54 @@ The point: make it viscerally obvious that default autovacuum settings are too c
 Shows the Postgres cost model for choosing between a Sequential Scan and an Index Scan. User sets table size, WHERE clause selectivity, and `random_page_cost`. Both plan costs are computed live using the real Postgres formulas and shown as cards — winner highlighted.
 
 The point: developers almost never understand why Postgres ignores their index. This makes it obvious.
+
+---
+
+## Kafka Post — Visualizer Specs
+
+Seven embedded components, all plain React + SVG/CSS — no charting dependency.
+
+### 1. `PartitionFlow` (hero)
+
+Producer → partitioner → partition log. Toggle between a keyed record (`murmur2(key) % numPartitions`) and a null key (sticky partitioner). Slider changes the partition count. Records append to the tail of a partition; a consumer walks behind them and lag is computed live.
+
+The point: partition choice happens on the client, and ordering is per-partition, never per-topic.
+
+### 2. `LogSegmentExplorer`
+
+A partition directory of three segments with their `.log`, `.index` and `.timeindex` files. Pick a target offset and step through the real lookup path: binary search the segment base offsets, binary search the sparse index, seek to the byte position, scan forward.
+
+The point: an offset is a position, and the sparse index is why seeking into a 1 GB segment is cheap.
+
+### 3. `ConsumerGroupSim`
+
+N consumers, M partitions, four assignors (Range, RoundRobin, Sticky, CooperativeSticky). Sliders change group size and partition count; a churn counter shows how many partitions changed hands, and per-partition lag ticks live. Idle consumers are called out when members exceed partitions.
+
+The point: Kafka balances partitions, not messages — and the assignment is computed by the group leader, a consumer.
+
+### 4. `RebalanceRace`
+
+Side-by-side tick timelines for the same event (a fourth consumer joining a group of three owning six partitions). Eager pauses every partition; cooperative-sticky revokes only the two that move. Green = processing, red = revoked. A partition-tick counter quantifies the gap.
+
+The point: eager rebalance stops the world for partitions that were never going to move.
+
+### 5. `ISRReplication`
+
+Three brokers, one leader and two followers, replicating on a tick loop. Toggle `acks` between `0`, `1` and `all`. Stall a follower to push it past `replica.lag.time.max.ms` and watch the ISR shrink, the high watermark stall, and the `min.insync.replicas` guard trip.
+
+The point: `acks=all` means "all *current* ISR members" — without `min.insync.replicas` it silently degrades to `acks=1`.
+
+### 6. `LogCompaction`
+
+A keyed log split into a cleanable region and an untouchable active segment. Append records and tombstones, then run the cleaner: superseded records vanish, offsets stay unrenumbered with gaps, and tombstones are purged only on a later pass. A materialized-view panel shows the table the log converges to.
+
+The point: compaction is key-based and orthogonal to time-based retention, and the active segment is never compacted.
+
+### 7. `ExactlyOnceSim`
+
+Two panels. First: a produce whose ACK is lost, with `enable.idempotence` toggleable — off appends a silent duplicate, on returns `DUPLICATE_SEQUENCE_NUMBER`. Second: a step-through transaction across two data topics plus `__consumer_offsets`, showing records sitting above the LSO until the commit marker lands.
+
+The point: exactly-once is a *processing* guarantee bounded by Kafka, not a delivery guarantee.
 
 ---
 

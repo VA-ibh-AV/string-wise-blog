@@ -8,6 +8,16 @@ import { lazy } from 'react'
  */
 const registry = [
   {
+    slug:        'kafka-internals',
+    type:        'post',
+    title:       'Kafka beyond the basics',
+    date:        '2025-08-16',
+    description: 'The log on disk, consumer group assignment, eager vs cooperative rebalancing, ISR and the high watermark, log compaction, and exactly-once — seven interactive visualizers for the Kafka internals that decide how production behaves.',
+    tags:        ['kafka', 'distributed-systems', 'internals'],
+    readingTime: '22 min',
+    component:   lazy(() => import('./posts/kafka-internals')),
+  },
+  {
     slug:        'postgres-internals',
     type:        'post',
     title:       'PostgreSQL storage internals',
