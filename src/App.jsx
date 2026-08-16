@@ -14,14 +14,26 @@ function PostLoader({ post }) {
   )
 }
 
+/**
+ * Mirrors PostHeader's geometry (back link, meta row, title, tags, rule) so the
+ * swap to the real post doesn't shift anything. Shares .article-shell, which
+ * centres itself, rather than relying on the article's mx-auto.
+ */
 function PostSkeleton() {
   return (
-    <div className="article-shell animate-pulse">
-      <div className="h-3 w-24 bg-zinc-200 rounded mb-6" />
-      <div className="h-8 w-3/4 bg-zinc-200 rounded mb-4" />
-      <div className="h-4 w-full bg-zinc-200 rounded mb-2" />
-      <div className="h-4 w-5/6 bg-zinc-200 rounded mb-2" />
-      <div className="h-4 w-4/6 bg-zinc-200 rounded" />
+    <div className="article-shell" aria-busy="true" aria-label="Loading post">
+      <div className="skeleton-bar" style={{ height: 11, width: 128, marginBottom: 30 }} />
+      <div className="skeleton-bar" style={{ height: 10, width: 210, marginBottom: 18 }} />
+      <div className="skeleton-bar" style={{ height: 38, width: '78%', marginBottom: 12 }} />
+      <div className="skeleton-bar" style={{ height: 38, width: '46%', marginBottom: 22 }} />
+      <div style={{ display: 'flex', gap: 6, marginBottom: 38 }}>
+        <div className="skeleton-bar" style={{ height: 22, width: 64 }} />
+        <div className="skeleton-bar" style={{ height: 22, width: 96 }} />
+        <div className="skeleton-bar" style={{ height: 22, width: 72 }} />
+      </div>
+      {['100%', '96%', '88%', '92%', '61%'].map((w, i) => (
+        <div key={i} className="skeleton-bar" style={{ height: 13, width: w, marginBottom: 12 }} />
+      ))}
     </div>
   )
 }
