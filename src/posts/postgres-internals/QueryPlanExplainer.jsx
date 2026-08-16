@@ -58,7 +58,7 @@ function PlanCard({ type, cost, winner, children }) {
         )}
       </div>
       <div className={`font-mono text-3xl font-bold mb-1 ${isWinner ? 'text-accent-600' : 'text-zinc-400'}`}>
-        {cost.toLocaleString()}
+        {cost.toLocaleString('en-US')}
       </div>
       <div className="font-mono text-[10px] text-zinc-400 mb-4">cost units</div>
       <div className="space-y-1.5 text-[11px] font-mono text-zinc-500">
@@ -169,7 +169,7 @@ export default function QueryPlanExplainer() {
         <div>
           <div className="flex justify-between mb-1">
             <span className="font-mono text-[11px] text-zinc-500">Seq Scan</span>
-            <span className="font-mono text-[11px] text-zinc-500">{seqScanCost.toLocaleString()}</span>
+            <span className="font-mono text-[11px] text-zinc-500">{seqScanCost.toLocaleString('en-US')}</span>
           </div>
           <div className="h-3 bg-zinc-100 rounded-full overflow-hidden">
             <div
@@ -181,7 +181,7 @@ export default function QueryPlanExplainer() {
         <div>
           <div className="flex justify-between mb-1">
             <span className="font-mono text-[11px] text-zinc-500">Index Scan</span>
-            <span className="font-mono text-[11px] text-zinc-500">{indexScanCost.toLocaleString()}</span>
+            <span className="font-mono text-[11px] text-zinc-500">{indexScanCost.toLocaleString('en-US')}</span>
           </div>
           <div className="h-3 bg-zinc-100 rounded-full overflow-hidden">
             <div

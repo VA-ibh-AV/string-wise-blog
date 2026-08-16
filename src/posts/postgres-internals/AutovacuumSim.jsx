@@ -4,7 +4,7 @@ const LIVE_ROWS     = 1_000_000
 const TICK_MS       = 600          // simulation step every 600ms
 const MAX_HISTORY   = 80           // chart shows last 80 ticks
 
-function fmt(n) { return n.toLocaleString() }
+function fmt(n) { return n.toLocaleString('en-US') }
 
 function StatCard({ label, value, sub, color = 'text-zinc-800' }) {
   return (

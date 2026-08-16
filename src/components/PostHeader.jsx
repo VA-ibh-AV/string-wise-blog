@@ -2,10 +2,14 @@ import { Link } from 'react-router-dom'
 import Tag from './Tag'
 
 function formatDate(dateStr) {
+  // timeZone pinned to UTC: '2025-08-16' parses as UTC midnight, so without it
+  // a reader west of Greenwich renders the previous day and hydration mismatches
+  // the prerendered markup.
   return new Date(dateStr).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    timeZone: 'UTC',
   })
 }
 

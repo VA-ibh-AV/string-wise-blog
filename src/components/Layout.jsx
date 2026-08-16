@@ -14,7 +14,10 @@ export default function Layout({ children }) {
 }
 
 function ThemeToggle() {
+  // Must match what the inline script in index.html already applied, or
+  // hydration of the prerendered markup mismatches on the first paint.
   const [theme, setTheme] = useState(() => {
+    if (typeof window === 'undefined') return 'light'
     const saved = window.localStorage.getItem('string-wise-theme')
     if (saved) return saved
     return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'

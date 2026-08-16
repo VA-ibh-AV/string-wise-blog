@@ -1,8 +1,9 @@
 import { Suspense } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 import Home from './pages/Home'
 import registry from './registry'
+import useDocumentMeta from './useDocumentMeta'
 
 function PostLoader({ post }) {
   const Component = post.component
@@ -26,6 +27,8 @@ function PostSkeleton() {
 }
 
 export default function App() {
+  useDocumentMeta()
+
   return (
     <Layout>
       <Routes>

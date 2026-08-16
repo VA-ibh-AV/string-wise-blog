@@ -6,6 +6,7 @@ function formatDate(dateStr) {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
+    timeZone: 'UTC',
   })
 }
 
