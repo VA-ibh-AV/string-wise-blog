@@ -3,11 +3,12 @@ import registry from './registry'
 export const SITE = {
   url:         'https://string-wise.com',
   name:        'string-wise',
-  title:       'string-wise — field notes on distributed systems',
-  description: 'Technical writing and interactive visualizers on distributed systems, databases, and Go.',
+  title:       'Vaibhav Bhardwaj — distributed systems engineer & field notes',
+  description: 'Senior software developer working on distributed systems and storage. Long-form internals writing with interactive visualizers — Kafka, PostgreSQL, TCP.',
   author:      'Vaibhav Bhardwaj',
   twitter:     '@goroutine_guy',
   locale:      'en_US',
+  ogImage:     '/og/home.png',
 }
 
 const posts = registry.filter(p => p.type === 'post')
@@ -29,14 +30,21 @@ export function metaForPath(pathname) {
       description: SITE.description,
       canonical:   SITE.url + '/',
       type:        'website',
-      image:       post?.ogImage ?? null,
+      // `post` is undefined by definition in this branch — the old
+      // `post?.ogImage` meant the homepage could never have a card image.
+      image:       SITE.ogImage ? SITE.url + SITE.ogImage : null,
       jsonLd: {
         '@context': 'https://schema.org',
         '@type': 'Blog',
         name: SITE.name,
         url: SITE.url,
         description: SITE.description,
-        author: { '@type': 'Person', name: SITE.author },
+        author: {
+          '@type': 'Person',
+          name: SITE.author,
+          url: SITE.url,
+          jobTitle: 'Senior Software Developer',
+        },
         blogPost: posts.map(p => ({
           '@type': 'BlogPosting',
           headline: p.title,

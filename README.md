@@ -136,6 +136,7 @@ That's it. Push to main. Vercel deploys in ~25 seconds.
 ### Published
 - **PostgreSQL Storage Internals** — MVCC, dead tuples, autovacuum, and query planning demystified with three embedded interactive visualizers.
 - **Kafka Beyond the Basics** — the log on disk, consumer group assignment, rebalancing, ISR and the high watermark, log compaction, and exactly-once, with seven embedded visualizers.
+- **TCP From the Inside** — handshake and teardown, RTO and fast retransmit, flow control vs congestion control, the state machine and TIME_WAIT, the Linux kernel path (`sk_buff`, `tcp_sendmsg`, NAPI, eBPF tracepoints), and the production gotchas, with seven embedded visualizers.
 
 ### Planned
 - Consistent hashing — deep-dive companion to [hash.string-wise.com](https://hash.string-wise.com)
@@ -233,15 +234,23 @@ Point `string-wise.com` (or your reverse proxy) at the Pi and forward traffic to
 ## Design Principles
 
 - **Prose first.** The writing carries the post. Visualizers support understanding, they don't replace explanation.
-- **No fluff.** No hero banners, no author bio carousels, no newsletter popups. Just a clean list of posts and a clean reading experience.
+- **The homepage is a portfolio; the posts are the proof.** Skills, experience and projects live on `/`, but the writing is what the site is actually for. No newsletter popups, no testimonials, no skill-percentage bars.
+- **One page, no new routes.** `allRoutes` in `src/seo.js` is derived from the post registry and `nginx.conf` has no SPA fallback, so a route the prerenderer never emitted returns a real 404 in production. Portfolio sections are anchors on `/`, not separate routes. Keep it that way unless you also teach `seo.js` about the new route.
+- **Tokens, not hex.** Every colour comes from the CSS custom properties at the top of `src/index.css`. Both themes are defined there and nowhere else; a hardcoded hex in a component is a bug waiting for the next palette change.
 - **Fast.** Static output, lazy-loaded post components, no runtime data fetching. Lighthouse 100 is the target.
 - **Visualizers are native.** Not iframes, not embeds. The interactive component is part of the post component tree — same styles, same fonts, same feel.
+
+## Editing the portfolio
+
+All homepage content lives in **`src/portfolio.js`** — profile, status lines, "now", skills, experience, projects, contact. The components under `src/components/portfolio/` are layout only.
+
+Anything left marked `TODO` renders on the live site in a loud red with a dotted underline (`.pf-todo`), so unfinished copy is impossible to miss. Values that are `null` — a contact link, an employment date — are simply not rendered rather than shipping a dead `mailto:` or a placeholder.
 
 ---
 
 ## Author
 
-**Vaibhav** — Senior Software Developer, AirCOP Central DevOps @ Bharti Airtel  
+**Vaibhav Bhardwaj** — Senior Software Developer @ Bharti Airtel  
 Building distributed systems tooling and writing about it at string-wise.com
 
-[LinkedIn](https://www.linkedin.com/in/vaibhav-bhardwaj-a0554a1b8/) · [GitHub](https://github.com/)
+[LinkedIn](https://www.linkedin.com/in/vaibhav-bhardwaj-a0554a1b8/) · [GitHub](https://github.com/VA-ibh-AV)

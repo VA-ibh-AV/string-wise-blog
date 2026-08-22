@@ -7,12 +7,19 @@ export default {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'monospace'],
       },
+      // Matches the --accent custom property in src/index.css. The runtime
+      // theme is driven by those CSS variables; this scale exists only for the
+      // `accent-*` utilities hardcoded inside the post visualizers.
+      // 300 and 500 were missing, which silently no-op'd `border-accent-300`
+      // and `bg-accent-500` in the PostgreSQL post.
       colors: {
         accent: {
           50:  '#EEF0FC',
           100: '#D5DAF8',
           200: '#ABB4F1',
+          300: '#8B98EB',
           400: '#7080E4',
+          500: '#5C71DB',
           600: '#4C63D2',
           700: '#3A4FB5',
           800: '#2B3E9A',
@@ -34,8 +41,8 @@ export default {
             '--tw-prose-quote-borders': theme('colors.accent.200'),
             '--tw-prose-captions':      theme('colors.zinc.500'),
             '--tw-prose-code':          theme('colors.zinc.900'),
-            '--tw-prose-pre-code':      theme('colors.zinc.100'),
-            '--tw-prose-pre-bg':        '#111111',
+            '--tw-prose-pre-code':      'var(--code-fg)',
+            '--tw-prose-pre-bg':        'var(--code-bg)',
             maxWidth: 'none',
             fontSize: '1.0625rem',
             lineHeight: '1.75',
@@ -61,17 +68,17 @@ export default {
             'code::after':  { content: '""' },
             code: {
               fontFamily:   theme('fontFamily.mono').join(', '),
-              background:   '#F1F1EE',
+              background:   'var(--surface-muted)',
               padding:      '0.1em 0.35em',
               borderRadius: '4px',
               fontSize:     '0.85em',
               fontWeight:   '500',
             },
             pre: {
-              background:   '#111111',
-              color:        '#e4e4e7',
+              background:   'var(--code-bg)',
+              color:        'var(--code-fg)',
               borderRadius: '10px',
-              border:       '1px solid #27272a',
+              border:       '1px solid var(--code-border)',
             },
             'pre code': {
               background:   'transparent',

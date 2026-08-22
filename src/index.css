@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Every variable name here is load-bearing: the visualizers in every post read
+   these tokens directly, so values may change and names never do. --green is
+   the secondary slot throughout. Dark is the default for a first-time visitor
+   — see the pre-paint script in index.html. */
 :root {
   color-scheme: light;
   --bg: #f7f8fc;
@@ -187,7 +191,7 @@
   .eyebrow, .micro-label, .post-index, .post-date, .reading-time, .section-count, .footer-end {
     font-family: var(--font-mono);
   }
-  .eyebrow { display: flex; align-items: center; gap: 8px; margin: 0 0 24px; color: var(--ink-faint); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .eyebrow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 24px; color: var(--ink-faint); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
   .eyebrow span:not(.eyebrow-dot) { color: var(--border); }
   .eyebrow-dot, .live-badge span { width: 7px; height: 7px; display: inline-block; border-radius: 999px; background: var(--green); box-shadow: 0 0 0 4px color-mix(in srgb, var(--green) 14%, transparent); }
   .hero-copy h1 { margin: 0; color: var(--ink); font-family: var(--font-mono); font-size: clamp(44px, 7vw, 82px); font-weight: 700; letter-spacing: -0.09em; line-height: 0.98; }
@@ -210,13 +214,16 @@
   .signal-line { padding: 13px 0; border-bottom: 1px solid var(--border-soft); color: var(--ink); font-family: var(--font-mono); font-size: 11px; }
   .signal-key { color: var(--ink-faint); }
   .signal-accent { color: var(--accent); }
+  /* A level meter, near enough. Twelve bars, each with its own resting height
+     and a slow offset breathe — the only place the studio reference is literal,
+     and it is still just a bar chart. */
   .signal-wave { display: flex; align-items: center; gap: 4px; height: 34px; margin-top: 16px; }
-  .signal-wave i { flex: 1; height: 8px; border-radius: 3px; background: var(--accent); opacity: .22; }
-  .signal-wave i:nth-child(2), .signal-wave i:nth-child(11) { height: 15px; opacity: .35; }
-  .signal-wave i:nth-child(3), .signal-wave i:nth-child(10) { height: 24px; opacity: .5; }
-  .signal-wave i:nth-child(4), .signal-wave i:nth-child(9) { height: 32px; opacity: .82; }
-  .signal-wave i:nth-child(5), .signal-wave i:nth-child(8) { height: 21px; opacity: .6; }
-  .signal-wave i:nth-child(6), .signal-wave i:nth-child(7) { height: 13px; opacity: .4; }
+  .signal-wave i { flex: 1; height: 8px; border-radius: 3px; background: var(--accent); opacity: .22; transform-origin: center; animation: wave-breathe 3.4s ease-in-out infinite; }
+  .signal-wave i:nth-child(2), .signal-wave i:nth-child(11) { height: 15px; opacity: .35; animation-delay: -.35s; }
+  .signal-wave i:nth-child(3), .signal-wave i:nth-child(10) { height: 24px; opacity: .5; animation-delay: -.7s; }
+  .signal-wave i:nth-child(4), .signal-wave i:nth-child(9) { height: 32px; opacity: .82; animation-delay: -1.05s; }
+  .signal-wave i:nth-child(5), .signal-wave i:nth-child(8) { height: 21px; opacity: .6; animation-delay: -1.4s; }
+  .signal-wave i:nth-child(6), .signal-wave i:nth-child(7) { height: 13px; opacity: .4; animation-delay: -1.75s; }
   .hero-aside-note { margin-top: 20px; color: var(--ink-faint); font-size: 12px; line-height: 1.65; }
 
   .library-section { padding: 82px 0 110px; }
@@ -226,7 +233,11 @@
   .post-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
   .post-card-link { display: block; min-width: 0; }
   .post-card { display: flex; min-height: 270px; flex-direction: column; padding: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); box-shadow: 0 10px 30px -30px rgba(26, 55, 97, .4); animation: card-in 450ms both; transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease; }
-  .post-card-featured { grid-column: span 2; min-height: 250px; background: linear-gradient(130deg, color-mix(in srgb, var(--surface-solid) 90%, var(--accent-soft)), var(--surface)); }
+  /* The grid child is .post-card-link (the anchor), not .post-card, so putting
+     grid-column on the card itself never did anything. The featured card is
+     always the first one — PostCard keys it off index === 0 — so target that. */
+  .post-grid > *:first-child { grid-column: span 2; }
+  .post-card-featured { min-height: 250px; background: linear-gradient(130deg, color-mix(in srgb, var(--surface-solid) 90%, var(--accent-soft)), var(--surface)); }
   .post-card:hover { border-color: color-mix(in srgb, var(--accent) 65%, var(--border)); box-shadow: 0 22px 45px -32px color-mix(in srgb, var(--accent) 45%, transparent); transform: translateY(-4px); }
   .post-card-top, .post-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
   .post-index, .post-date { color: var(--ink-faint); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; }
@@ -265,7 +276,7 @@
   .post-header-meta { display: flex; gap: 10px; margin-bottom: 18px; color: var(--ink-faint); font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; }
   .post-header h1 { margin: 0 0 22px; color: var(--ink); font-family: var(--font-mono); font-size: clamp(30px, 5vw, 52px); letter-spacing: -.075em; line-height: 1.05; }
   .post-header hr { margin-top: 38px; border: 0; border-top: 1px solid var(--border); }
-  .article-shell.prose { --tw-prose-body: var(--ink-dim); --tw-prose-headings: var(--ink); --tw-prose-links: var(--accent); --tw-prose-bold: var(--ink); --tw-prose-counters: var(--ink-faint); --tw-prose-bullets: var(--accent); --tw-prose-hr: var(--border); --tw-prose-quotes: var(--ink); --tw-prose-quote-borders: var(--accent); --tw-prose-captions: var(--ink-faint); --tw-prose-code: var(--accent); --tw-prose-pre-code: #dce8ff; --tw-prose-pre-bg: #111a28; }
+  .article-shell.prose { --tw-prose-body: var(--ink-dim); --tw-prose-headings: var(--ink); --tw-prose-links: var(--accent); --tw-prose-bold: var(--ink); --tw-prose-counters: var(--ink-faint); --tw-prose-bullets: var(--accent); --tw-prose-hr: var(--border); --tw-prose-quotes: var(--ink); --tw-prose-quote-borders: var(--accent); --tw-prose-captions: var(--ink-faint); --tw-prose-code: var(--accent); --tw-prose-pre-code: var(--code-fg); --tw-prose-pre-bg: var(--code-bg); }
   .article-shell.prose p, .article-shell.prose li { color: var(--ink-dim); }
   .article-shell.prose strong { color: var(--ink); }
   /* Inline code only. Without the :not(pre) this out-specifies .code-block-pre code
@@ -336,7 +347,9 @@
   .slider-row { @apply flex items-center gap-3 mb-3; }
   .slider-label { @apply text-xs font-mono min-w-[180px]; color: var(--ink-dim); }
   .slider-value { @apply text-xs font-mono font-semibold min-w-[56px] text-right; color: var(--ink); }
-  .sim-log { @apply rounded-xl p-4 h-28 overflow-y-auto text-xs font-mono; background: #0b111c; color: #b9c8dd; }
+  /* Event logs are terminals — same warm dark surface as the code blocks, in
+     both themes, rather than the cool blue-black they used to hardcode. */
+  .sim-log { @apply rounded-xl p-4 h-28 overflow-y-auto text-xs font-mono; background: var(--code-bg); color: var(--code-fg); border: 1px solid var(--code-border); }
   .sim-chart { display: block; width: 100%; height: 176px; overflow: visible; }
   .sim-chart-grid { stroke: var(--border); stroke-dasharray: 3 4; stroke-opacity: .8; }
   .sim-chart-label { fill: var(--ink-faint); font-family: var(--font-mono); font-size: 10px; }
@@ -407,6 +420,71 @@
   .tcp-state-edge-active { stroke: var(--accent); stroke-width: 2.5; }
   .tcp-state-edge-label { fill: var(--ink-faint); font-family: var(--font-mono); font-size: 9px; }
   .tcp-state-edge-label-active { fill: var(--accent); }
+
+  /* Visualizers hardcode `text-accent-600` and `accent-blue-600` from before the
+     theme was token-driven. Rather than edit twenty post files, out-specify the
+     utilities here (0,2,0 and 0,1,1 beat a bare 0,1,0 class) so both follow the
+     live accent in whichever theme is active. */
+  .viz-card .text-accent-600 { color: var(--accent); }
+  .viz-card input[type="range"] { accent-color: var(--accent); }
+
+  /* ---- Portfolio sections on the homepage -------------------------------- */
+
+  .pf-section { padding: 74px 0; }
+  .pf-section + .pf-section { border-top: 1px solid var(--border-soft); }
+  .pf-lede { max-width: 680px; margin: 0 0 30px; color: var(--ink-dim); font-size: 15px; line-height: 1.75; }
+
+  /* now */
+  .now-list { display: grid; gap: 0; max-width: 760px; }
+  .now-item { display: flex; gap: 14px; align-items: baseline; padding: 13px 0; border-bottom: 1px solid var(--border-soft); color: var(--ink-dim); font-size: 14px; line-height: 1.6; }
+  .now-item:last-child { border-bottom: 0; }
+  .now-item span { flex-shrink: 0; color: var(--accent); font-family: var(--font-mono); font-size: 10px; }
+
+  /* skills */
+  .skill-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .skill-group { padding: 18px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+  .skill-group h3 { margin: 0 0 14px; color: var(--ink-faint); font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+  .skill-items { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  /* experience timeline */
+  .tl { display: grid; gap: 4px; }
+  .tl-item { display: grid; grid-template-columns: 148px 1fr; gap: 26px; padding: 26px 0; border-top: 1px solid var(--border-soft); }
+  .tl-item:first-child { border-top: 0; }
+  .tl-rail { display: flex; flex-direction: column; gap: 7px; }
+  .tl-date { color: var(--ink-faint); font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; }
+  .tl-place { color: var(--ink-faint); font-family: var(--font-mono); font-size: 10px; }
+  .tl-current { display: inline-flex; align-items: center; gap: 7px; color: var(--green); font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+  .tl-current::before { content: ''; width: 5px; height: 5px; border-radius: 999px; background: var(--green); }
+  .tl-role { margin: 0 0 4px; color: var(--ink); font-family: var(--font-mono); font-size: 16px; letter-spacing: -.03em; }
+  .tl-company { margin: 0 0 14px; color: var(--accent); font-family: var(--font-mono); font-size: 12px; }
+  .tl-bullets { margin: 0; padding: 0; list-style: none; display: grid; gap: 9px; }
+  .tl-bullets li { position: relative; padding-left: 18px; color: var(--ink-dim); font-size: 14px; line-height: 1.7; }
+  .tl-bullets li::before { content: ''; position: absolute; left: 2px; top: 10px; width: 5px; height: 1px; background: var(--accent); }
+
+  /* projects */
+  .proj-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .proj-card { display: flex; flex-direction: column; height: 100%; padding: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease; }
+  a.proj-card:hover { border-color: color-mix(in srgb, var(--accent) 65%, var(--border)); box-shadow: 0 22px 45px -32px color-mix(in srgb, var(--accent) 45%, transparent); transform: translateY(-4px); }
+  .proj-top { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 16px; }
+  .proj-status { color: var(--ink-faint); font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+  .proj-name { margin: 0 0 10px; color: var(--ink); font-family: var(--font-mono); font-size: 17px; letter-spacing: -.045em; }
+  .proj-blurb { margin: 0 0 14px; color: var(--ink-dim); font-size: 14px; line-height: 1.7; }
+  .proj-hard { margin: 0 0 18px; padding-left: 12px; border-left: 2px solid color-mix(in srgb, var(--accent) 45%, var(--border)); color: var(--ink-faint); font-size: 13px; line-height: 1.6; }
+  .proj-hard b { color: var(--ink-dim); font-weight: 500; }
+  .proj-card .tag-list { margin-top: auto; }
+
+  /* contact */
+  .contact-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+  .contact-link { display: inline-flex; align-items: center; gap: 10px; padding: 13px 17px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: var(--font-mono); font-size: 12px; transition: border-color 150ms ease, color 150ms ease, transform 150ms ease; }
+  .contact-link:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+  .contact-link span { color: var(--ink-faint); font-size: 10px; text-transform: uppercase; letter-spacing: .1em; }
+  .contact-link:hover span { color: var(--accent); }
+  .contact-note { margin: 22px 0 0; color: var(--ink-faint); font-size: 13px; line-height: 1.7; }
+
+  /* Guard for placeholder copy left in src/portfolio.js. Nothing uses it while
+     the content is complete — it exists so a future TODO cannot ship quietly. */
+  .pf-todo { color: #c2410c; text-decoration: underline dotted currentColor; text-underline-offset: 3px; }
+  :root[data-theme='dark'] .pf-todo { color: #f87f6a; }
 }
 
 /* The article and simulators contain Tailwind utility classes from the original UI.
@@ -420,6 +498,14 @@
 :root[data-theme='dark'] .hover\:bg-zinc-50:hover { background-color: var(--surface-muted) !important; }
 
 @keyframes card-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes wave-breathe { 0%, 100% { transform: scaleY(.72); } 50% { transform: scaleY(1.18); } }
+
+/* Motion is decoration here — the staggered card entrance and the level meter
+   both carry no information, so drop them rather than reduce them. */
+@media (prefers-reduced-motion: reduce) {
+  .post-card, .proj-card { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .signal-wave i { animation: none !important; transform: none !important; }
+}
 @keyframes skeleton-sweep { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 
 @media (max-width: 760px) {
@@ -432,14 +518,21 @@
   .hero-copy h1 { font-size: clamp(42px, 14vw, 68px); }
   .hero-description { font-size: 16px; }
   .post-grid { grid-template-columns: 1fr; }
-  .post-card-featured { grid-column: auto; }
+  .post-grid > *:first-child { grid-column: auto; }
   .site-footer-inner { grid-template-columns: 1fr; gap: 26px; }
   .footer-end { text-align: left; }
   .article-shell { padding-top: 48px !important; }
+  .pf-section { padding: 54px 0; }
+  .skill-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .proj-grid { grid-template-columns: 1fr; }
+  .tl-item { grid-template-columns: 1fr; gap: 12px; }
 }
 
 @media (max-width: 480px) {
-  .nav-link:not(.nav-link-linkedin) { display: none; }
+  /* The site's own navigation survives; the outbound links are the ones that
+     go, since they are all repeated in the footer. */
+  .nav-link-ext { display: none; }
+  .site-nav { gap: 11px; }
   .hero-actions { align-items: stretch; flex-direction: column; }
   .primary-action, .secondary-action { justify-content: center; }
   .post-card { min-height: 250px; }
@@ -447,4 +540,11 @@
   .post-card-footer { align-items: flex-start; flex-direction: column; }
   .reading-time { margin-left: 0; }
   .footer-links { flex-direction: column; gap: 8px; }
+  .skill-groups { grid-template-columns: 1fr; }
+  .contact-link { flex: 1 1 100%; justify-content: space-between; }
+  /* "in the weeds." is 13 mono characters; at 14vw it runs past a 343px
+     container and body's overflow-x:hidden silently clips it. */
+  .hero-copy h1 { font-size: clamp(34px, 12vw, 52px); }
+  .signal-line { flex-wrap: wrap; gap: 4px 12px; }
+  .signal-line > span:last-child { text-align: right; }
 }

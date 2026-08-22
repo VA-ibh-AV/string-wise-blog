@@ -25,22 +25,31 @@ The dev server hot-reloads on file changes. Edit any React component and the bro
 ```
 src/
   App.jsx                 # Router, lazy loads posts
-  main.jsx                # React entry point
+  main.jsx                # React entry point / hydration
+  entry-server.jsx        # SSR render used by the prerenderer
   registry.js             # Single source of truth for all posts
-  index.css               # Tailwind directives + visualizer utilities
+  seo.js                  # SITE metadata, allRoutes, per-path head tags
+  portfolio.js            # Homepage content — the file to edit
+  index.css               # Theme tokens + all site and visualizer CSS
   components/
-    Layout.jsx            # Nav, footer wrapper
-    PostCard.jsx          # Homepage listing card
+    Layout.jsx            # Nav, footer, theme toggle
+    PostCard.jsx          # Writing-section listing card
     PostHeader.jsx        # Title, date, tags bar
+    CodeBlock.jsx         # Prism-highlighted code block
     Tag.jsx               # Tag badge component
+    portfolio/            # Homepage sections (layout only, content from portfolio.js)
+      Hero.jsx  NowBlock.jsx  SkillGrid.jsx
+      ExperienceTimeline.jsx  ProjectGrid.jsx  ContactBlock.jsx
+      Section.jsx  Copy.jsx
   pages/
-    Home.jsx              # Homepage — lists all posts
+    Home.jsx              # Single-page portfolio + the writing list
   posts/
-    postgres-internals/
-      index.jsx           # The full post article + prose
-      MVCCVisualizer.jsx  # Live/dead tuple simulator
-      AutovacuumSim.jsx   # Real-time autovacuum race
-      QueryPlanExplainer.jsx  # Cost model visualizer
+    postgres-internals/   # index.jsx + 3 visualizers
+    kafka-internals/      # index.jsx + 7 visualizers
+    tcp-internals/        # index.jsx + 7 visualizers
+scripts/
+  prerender.mjs           # Writes dist/<route>/index.html, sitemap, robots
+  og/                     # OG card sources + regeneration steps
 ```
 
 ---
@@ -98,11 +107,19 @@ src/
 - `btn-sim`, `btn-sim-accent`, `btn-sim-danger` — button styles
 - `slider-row`, `stat-card`, `sim-log` — visualizer component utilities
 
-**No CSS files to edit.** Everything is Tailwind classes. The custom config is in `tailwind.config.js`:
+**Most styling lives in `src/index.css`, not in Tailwind classes.** The classes above are defined in a hand-written `@layer components` block there, on top of a set of CSS custom properties that define both themes:
 
-- Accent color palette (blue-based)
+- `:root` — the light (warm paper) theme
+- `:root[data-theme='dark']` — the dark theme, which is the **default** for a first-time visitor
+- The theme is applied by an inline pre-paint script in `index.html` and toggled by `ThemeToggle` in `src/components/Layout.jsx`. **Those two must resolve the theme identically** or the prerendered markup mismatches on hydration.
+
+Never hardcode a colour in a component — use `var(--accent)`, `var(--ink-dim)`, `var(--surface-muted)` and friends, so both themes follow automatically.
+
+`tailwind.config.js` holds the rest:
+
+- `accent.*` colour scale (amber, mirroring `--accent`) — only used by `accent-*` utilities hardcoded inside older visualizers
 - Custom fonts: Inter (body), JetBrains Mono (code/headers)
-- Typography plugin with custom prose styling
+- Typography plugin overrides, pointed at the same custom properties
 
 ---
 
@@ -198,7 +215,16 @@ npm run dev
 ```
 
 **Charts not rendering:**
-Recharts requires `<ResponsiveContainer>` to have a defined height. Make sure parent div has explicit height (e.g., `h-44`).
+There is no chart library — every chart is hand-rolled inline SVG using the `.sim-chart-*` classes. A blank chart almost always means the series has fewer than two points, since `<polyline>` with a single point draws nothing.
+
+**A new route 404s in production but works in `npm run dev`:**
+`allRoutes` in `src/seo.js` is derived from the post registry, so the prerenderer never emitted HTML for your route, and `nginx.conf` has no SPA fallback. Either add the route to `allRoutes` and `metaForPath`, or make it an anchor section on `/` instead.
+
+**Hydration mismatch warnings in the console:**
+Usually the theme. The inline pre-paint script in `index.html` and the `useState` initializer in `ThemeToggle` must resolve to the same value. Both default to dark when nothing is saved.
+
+**The build fails during prerender:**
+`npm run build` renders every route through `renderToPipeableStream`. A component that touches `window` or `localStorage` at module scope or during render will crash the build rather than just the page — guard it with `typeof window === 'undefined'`.
 
 ---
 
