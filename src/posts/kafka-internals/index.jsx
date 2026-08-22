@@ -519,8 +519,10 @@ enable.auto.commit=false               # non-negotiable — offsets go via the t
         <hr />
 
         <p>
-          Related: <a href="/postgres-internals">PostgreSQL storage internals</a> — MVCC, dead tuples and the cost-based planner.
-          Also: <a href="https://raft.string-wise.com">Raft consensus visualizer</a>, which covers the leader-election machinery Kafka's own KRaft controller is built on, and
+          Related: <a href="/tcp-internals">TCP from the inside</a> — every replica ack, every fetch and every heartbeat in this post is a byte stream over TCP, and
+          the delivery guarantee ISR is built on top of turns out to be sequence numbers, cumulative ACKs and a retransmit timer.
+          Also: <a href="/postgres-internals">PostgreSQL storage internals</a> — MVCC, dead tuples and the cost-based planner,
+          <a href="https://raft.string-wise.com">Raft consensus visualizer</a>, which covers the leader-election machinery Kafka's own KRaft controller is built on, and
           the <a href="https://hash.string-wise.com">consistent hashing visualizer</a> for the partitioning problem one layer down.
         </p>
       </section>

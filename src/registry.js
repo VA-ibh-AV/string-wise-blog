@@ -8,6 +8,17 @@ import { lazy } from 'react'
  */
 const registry = [
   {
+    slug:        'tcp-internals',
+    type:        'post',
+    title:       'TCP from the inside',
+    date:        '2026-08-22',
+    description: 'The handshake, retransmission and RTO, flow control versus congestion control, the state machine and TIME_WAIT, what the Linux kernel actually runs — sk_buff, tcp_sendmsg, NAPI, eBPF tracepoints — and the production gotchas that page you at 3am. Seven interactive visualizers.',
+    tags:        ['tcp', 'networking', 'linux', 'internals'],
+    readingTime: '30 min',
+    ogImage:     '/og/tcp-internals.png',
+    component:   lazy(() => import('./posts/tcp-internals')),
+  },
+  {
     slug:        'kafka-internals',
     type:        'post',
     title:       'Kafka beyond the basics',

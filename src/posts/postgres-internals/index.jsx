@@ -271,6 +271,14 @@ ANALYZE;  -- rebuild planner stats`} />
         <p>
           Monitor dead tuples. Watch autovacuum. Understand the cost model. Your database will thank you.
         </p>
+
+        <hr />
+
+        <p>
+          Related: <a href="/tcp-internals">TCP from the inside</a> — the WAL is what makes a commit durable on disk, and one layer down
+          sequence numbers and ACKs are what make the bytes of that commit durable on the wire. Same idea, different failure domain.
+          Also: <a href="/kafka-internals">Kafka beyond the basics</a> — the log on disk, consumer groups, ISR and exactly-once.
+        </p>
       </section>
     </article>
   )
