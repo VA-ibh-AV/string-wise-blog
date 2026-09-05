@@ -23,6 +23,8 @@ export default function useDocumentMeta() {
   const { pathname } = useLocation()
 
   useEffect(() => {
+    window.scrollTo(0, 0)
+
     const meta = metaForPath(pathname)
 
     document.title = meta.title

@@ -8,6 +8,16 @@ import { lazy } from 'react'
  */
 const registry = [
   {
+    slug:        'monitoring-agent-internals',
+    type:        'post',
+    title:       "The anatomy of a lightweight monitoring agent's performance",
+    date:        '2026-09-05',
+    description: 'A lightweight agent meant to be invisible was quietly burning more CPU and memory than it should. Seven unglamorous costs stacked up: file descriptor churn, /proc scraping overhead, JSON serialization, GC pressure, RSS behavior, and unbounded goroutines — each with an interactive visualizer.',
+    tags:        ['performance', 'go', 'observability', 'internals'],
+    readingTime: '24 min',
+    component:   lazy(() => import('./posts/monitoring-agent-internals')),
+  },
+  {
     slug:        'tcp-internals',
     type:        'post',
     title:       'TCP from the inside',

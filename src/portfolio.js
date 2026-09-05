@@ -65,9 +65,13 @@ export const experience = [
     current:  true,
     location: null,
     bullets: [
-      'Build and operate a distributed central monitoring platform that ingests roughly 10 TB of telemetry a day across the national network.',
-      'Own the Go ingestion and processing services behind it — Kafka for transport, Elasticsearch for search, Grafana and Kibana on top.',
-      'Spend most incident time in the layer below the dashboards: consumer lag, retransmits, GC pauses, and the queries that got slow when nobody was looking.',
+      'Architected and built a distributed observability platform from the ground up, scaled to 50,000+ agents across the national network, ingesting tens of terabytes of telemetry a day.',
+      'Built Go/eBPF agents that capture live process and network topology at the host level, surfaced through a full-stack monitoring UI with interactive graphs and dependency views.',
+      'Designed and shipped low-latency REST APIs (Go/Gin) with Redis-backed caching over a distributed ClickHouse store, powering real-time dashboards and topology views under high query load.',
+      'Applied deep CPU and memory optimization on the agent side — cutting syscall and file-descriptor churn, reducing /proc scraping overhead, switching serialization formats to cut GC pressure, and tuning goroutine/channel patterns for lower steady-state resource usage.',
+      'Designed a fine-grained, resource-level RBAC system alongside SAML-based SSO/identity federation layered on API gateway auth, and led rollout of multi-cluster Kubernetes monitoring across the fleet.',
+      'Built the alerting and anomaly-detection stack end-to-end — Redis-backed state machines, event-driven delivery over NATS JetStream, and statistical/ML anomaly models running per-host, per-metric at scale.',
+      'Own 15+ distributed Go microservices behind an API gateway, plus the React frontends engineers rely on to investigate incidents in real time.',
     ],
   },
   {
