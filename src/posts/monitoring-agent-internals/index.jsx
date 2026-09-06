@@ -308,7 +308,10 @@ for conn := range incoming {
         <p>
           Related: one layer further down the stack, <Link to="/tcp-internals">TCP from the inside</Link> walks the same kind of
           investigation through <code>sk_buff</code>s and the kernel's send/receive path — different failure domain, same habit
-          of going one layer deeper each time the first answer doesn't fully explain the symptom. Also:{' '}
+          of going one layer deeper each time the first answer doesn't fully explain the symptom.{' '}
+          <Link to="/go-channels-internals">Go channels: what's actually inside hchan</Link> takes Part 6's unbounded-goroutines
+          point and goes all the way into the channel internals behind it — the same leaked-goroutine shape shows up there as a
+          full incident, traced back to <code>hchan</code>'s wait queues field by field. Also:{' '}
           <Link to="/kafka-internals">Kafka beyond the basics</Link> and{' '}
           <Link to="/postgres-internals">PostgreSQL storage internals</Link> for what the systems the agent is watching are
           doing on their own side of the wire.

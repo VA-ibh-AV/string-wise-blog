@@ -8,6 +8,16 @@ import { lazy } from 'react'
  */
 const registry = [
   {
+    slug:        'go-channels-internals',
+    type:        'post',
+    title:       "Go channels: what's actually inside hchan",
+    date:        '2026-09-13',
+    description: 'The real runtime struct behind every channel, field by field — the ring buffer, the sudog wait queues, select internals, close semantics — used to explain and fix eleven production bugs: leaked goroutines, deadlocked worker pools, a send-on-closed panic race, a select{default:} loop burning a CPU core, and more.',
+    tags:        ['go', 'concurrency', 'internals', 'production'],
+    readingTime: '28 min',
+    component:   lazy(() => import('./posts/go-channels-internals')),
+  },
+  {
     slug:        'monitoring-agent-internals',
     type:        'post',
     title:       "The anatomy of a lightweight monitoring agent's performance",
