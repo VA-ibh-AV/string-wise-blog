@@ -8,6 +8,16 @@ import { lazy } from 'react'
  */
 const registry = [
   {
+    slug:        'go-vs-vector-pipeline',
+    type:        'post',
+    title:       "We diffed our pipeline against Vector's source. Here's what we found.",
+    date:        '2026-09-23',
+    description: 'A Go Kafka-to-Elasticsearch pipeline stuck at half of Vector\'s throughput, diffed line by line against Vector\'s source and defaults: a fixed semaphore vs. adaptive request concurrency, batch economics, regex constant factors, redundant JSON round-trips, and payload copies — with five interactive visualizers.',
+    tags:        ['go', 'rust', 'performance', 'elasticsearch', 'kafka'],
+    readingTime: '22 min',
+    component:   lazy(() => import('./posts/go-vs-vector-pipeline')),
+  },
+  {
     slug:        'go-channels-internals',
     type:        'post',
     title:       "Go channels: what's actually inside hchan",
