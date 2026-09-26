@@ -8,6 +8,16 @@ import { lazy } from 'react'
  */
 const registry = [
   {
+    slug:        'retries',
+    type:        'post',
+    title:       'Your retries took down prod. Not the outage.',
+    date:        '2026-09-26',
+    description: 'How a 40-second database failover becomes an hour-long outage: synchronized retry storms, backoff and jitter, amplification across layers, what the network drops first (SYN retransmits, accept queues, conntrack, TIME_WAIT), timeout budgets, metastable failure, and the fixes that work: retry budgets, load shedding, idempotency keys. Seven interactive visualizers.',
+    tags:        ['distributed-systems', 'reliability', 'networking', 'go'],
+    readingTime: '26 min',
+    component:   lazy(() => import('./posts/retries')),
+  },
+  {
     slug:        'go-vs-vector-pipeline',
     type:        'post',
     title:       "We diffed our pipeline against Vector's source. Here's what we found.",
