@@ -473,6 +473,27 @@
   .proj-hard b { color: var(--ink-dim); font-weight: 500; }
   .proj-card .tag-list { margin-top: auto; }
 
+  /* play — cards for play.string-wise.com. The sky strip is always night,
+     like code blocks, so it reads as "a playground" in either theme. */
+  .play-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .play-card { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); animation: card-in 450ms both; transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease; }
+  a.play-card:hover { border-color: color-mix(in srgb, #ffd37a 55%, var(--border)); box-shadow: 0 22px 45px -30px rgba(255, 211, 122, .35); transform: translateY(-4px); }
+  a.play-card:hover .post-arrow { transform: translate(3px, -3px); }
+  .play-card-soon .play-body { opacity: .6; } /* not on the card: card-in ends at opacity 1 there */
+  .play-card-soon .play-art { filter: saturate(.45) brightness(.75); }
+  .play-art { display: block; width: 100%; height: 96px; background: radial-gradient(120% 140% at 50% 0%, #17133a 0%, #080a1a 70%); border-bottom: 1px solid var(--border); }
+  .play-star { fill: #ffffff; opacity: .55; }
+  .play-orbit { fill: rgba(255, 255, 255, .04); stroke: rgba(255, 255, 255, .12); }
+  .play-body { display: flex; flex: 1; flex-direction: column; padding: 18px 20px 20px; }
+  .play-body .proj-top { align-items: flex-start; margin-bottom: 8px; }
+  .play-name { margin: 0; }
+  .play-badge { flex-shrink: 0; padding: 2px 8px; border: 1px solid var(--border); border-radius: 999px; color: var(--ink-faint); font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; }
+  .play-badge-live { border-color: color-mix(in srgb, #e0a92e 60%, var(--border)); color: #d4a02a; }
+  .play-meta { display: flex; align-items: center; justify-content: space-between; margin: auto 0 0; padding-top: 16px; color: var(--ink-faint); font-family: var(--font-mono); font-size: 11px; }
+  .play-body .tag-list { margin-bottom: 0; }
+  .play-lede-link { color: var(--accent); }
+  .play-lede-link:hover { text-decoration: underline; }
+
   /* contact */
   .contact-grid { display: flex; flex-wrap: wrap; gap: 10px; }
   .contact-link { display: inline-flex; align-items: center; gap: 10px; padding: 13px 17px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: var(--font-mono); font-size: 12px; transition: border-color 150ms ease, color 150ms ease, transform 150ms ease; }
@@ -503,7 +524,8 @@
 /* Motion is decoration here — the staggered card entrance and the level meter
    both carry no information, so drop them rather than reduce them. */
 @media (prefers-reduced-motion: reduce) {
-  .post-card, .proj-card { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .post-card, .proj-card, .play-card { animation: none !important; transform: none !important; }
+  .post-card, .proj-card { opacity: 1 !important; }
   .signal-wave i { animation: none !important; transform: none !important; }
 }
 @keyframes skeleton-sweep { from { background-position: 200% 0; } to { background-position: -200% 0; } }
@@ -525,6 +547,7 @@
   .pf-section { padding: 54px 0; }
   .skill-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .proj-grid { grid-template-columns: 1fr; }
+  .play-grid { grid-template-columns: 1fr; }
   .tl-item { grid-template-columns: 1fr; gap: 12px; }
 }
 

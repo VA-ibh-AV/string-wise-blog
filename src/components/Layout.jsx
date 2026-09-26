@@ -71,6 +71,7 @@ function Nav() {
               and these have to work from a post page as well as from the
               homepage. On a prerendered static site the full load is cheap. */}
           <a href="/#work" className="nav-link">work</a>
+          <a href="/#play" className="nav-link">play</a>
           <a href="/#writing" className="nav-link">writing</a>
           <a href="/#contact" className="nav-link">contact</a>
           <span className="nav-divider" aria-hidden="true" />
@@ -100,6 +101,7 @@ function Footer() {
         <div className="footer-projects">
           <p className="micro-label">elsewhere</p>
           <div className="footer-links">
+            <a href="https://play.string-wise.com" target="_blank" rel="noopener noreferrer">play.string-wise.com ↗</a>
             <a href="https://hash.string-wise.com" target="_blank" rel="noopener noreferrer">hash.string-wise.com ↗</a>
             <a href="https://raft.string-wise.com" target="_blank" rel="noopener noreferrer">raft.string-wise.com ↗</a>
             {/* Rendered only once set in src/portfolio.js, so the footer never

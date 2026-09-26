@@ -14,7 +14,7 @@ export default function ContactBlock() {
   ].filter(Boolean)
 
   return (
-    <Section id="contact" index={6} title="Contact"
+    <Section id="contact" index={7} title="Contact"
              lede="Happy to talk about distributed systems, storage internals, or anything in the posts above.">
       <div className="contact-grid">
         {links.map(link => (

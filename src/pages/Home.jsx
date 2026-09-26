@@ -5,6 +5,7 @@ import NowBlock from '../components/portfolio/NowBlock'
 import SkillGrid from '../components/portfolio/SkillGrid'
 import ExperienceTimeline from '../components/portfolio/ExperienceTimeline'
 import ProjectGrid from '../components/portfolio/ProjectGrid'
+import PlayGrid from '../components/portfolio/PlayGrid'
 import ContactBlock from '../components/portfolio/ContactBlock'
 import Section from '../components/portfolio/Section'
 
@@ -24,10 +25,11 @@ export default function Home() {
       <SkillGrid />
       <ExperienceTimeline />
       <ProjectGrid />
+      <PlayGrid />
 
       <Section
         id="writing"
-        index={5}
+        index={6}
         title="Writing"
         count={`${registry.length} entries`}
         lede="Long-form pieces on how systems actually behave, each with interactive visualizers you can break on purpose."

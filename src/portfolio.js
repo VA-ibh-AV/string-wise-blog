@@ -137,6 +137,66 @@ export const projects = [
   },
 ]
 
+export const PLAY_URL = 'https://play.string-wise.com'
+
+/**
+ * play.string-wise.com — calm, no-score playgrounds. `path` set means it is
+ * open and the card links out; `path: null` renders a dimmed "soon" card.
+ * `art` picks the little sky drawn on the card (see PlayGrid.jsx).
+ */
+export const playgrounds = [
+  {
+    name:     'Kernel Cosmos',
+    path:     '/cosmos',
+    status:   'beta',
+    line:     'Every planet is a Linux process.',
+    tags:     ['processes', 'scheduler', 'memory', 'page cache', 'interrupts'],
+    missions: 16,
+    art:      'cosmos',
+  },
+  {
+    name:     'Packet Garden',
+    path:     '/garden',
+    status:   'beta',
+    line:     'Grow a constellation, watch it route.',
+    tags:     ['routing', 'OSPF', 'load balancing', 'caching', 'convergence'],
+    missions: 9,
+    art:      'garden',
+  },
+  {
+    name:     'Goroutine Lanterns',
+    path:     null,
+    status:   'soon',
+    line:     'Channels as strings of light: hchan, select and deadlocks you can see.',
+    tags:     ['go', 'channels', 'select'],
+    art:      'lanterns',
+  },
+  {
+    name:     'Consensus Choir',
+    path:     null,
+    status:   'soon',
+    line:     'Raft, as sound. Leader election and log replication you can hear.',
+    tags:     ['raft', 'consensus'],
+    art:      'choir',
+  },
+  {
+    name:     'Data Structure Zen Garden',
+    path:     null,
+    status:   'soon',
+    line:     'Rake a B-tree. B-trees, hash rings and heaps, arranged calmly.',
+    tags:     ['b-trees', 'hash rings', 'heaps'],
+    art:      'zen',
+  },
+  {
+    name:     'Slow Packet',
+    path:     null,
+    status:   'soon',
+    line:     "One packet's long trip: DNS → TCP → NAT → conntrack → socket, slowly.",
+    tags:     ['dns', 'tcp', 'nat', 'conntrack'],
+    art:      'slow',
+  },
+]
+
 export const contact = {
   email:    null,   // set to a string to render it; left off deliberately
   github:   'https://github.com/VA-ibh-AV',
