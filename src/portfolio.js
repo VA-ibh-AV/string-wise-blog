@@ -151,6 +151,7 @@ export const playgrounds = [
     status:   'beta',
     line:     'Every planet is a Linux process.',
     tags:     ['processes', 'scheduler', 'memory', 'page cache', 'interrupts'],
+    minutes:  5,
     missions: 16,
     art:      'cosmos',
   },
@@ -160,8 +161,29 @@ export const playgrounds = [
     status:   'beta',
     line:     'Grow a constellation, watch it route.',
     tags:     ['routing', 'OSPF', 'load balancing', 'caching', 'convergence'],
+    minutes:  5,
     missions: 9,
     art:      'garden',
+  },
+  {
+    name:     'Packet Drift',
+    path:     '/drift',
+    status:   'beta',
+    line:     'Fly one HTTPS request across the internet.',
+    tags:     ['DNS', 'TCP handshake', 'TLS', 'NAT', 'BGP'],
+    minutes:  3,
+    missions: 3,
+    art:      'drift',
+  },
+  {
+    name:     'Orbit Synth',
+    path:     '/orbit',
+    status:   'beta',
+    line:     'A music box that is secretly a CPU scheduler.',
+    tags:     ['CFS', 'round robin', 'nice', 'SCHED_FIFO', 'starvation'],
+    minutes:  5,
+    missions: 5,
+    art:      'orbit',
   },
   {
     name:     'Goroutine Lanterns',
@@ -169,6 +191,7 @@ export const playgrounds = [
     status:   'soon',
     line:     'Channels as strings of light: hchan, select and deadlocks you can see.',
     tags:     ['go', 'channels', 'select'],
+    minutes:  5,
     art:      'lanterns',
   },
   {
@@ -177,6 +200,7 @@ export const playgrounds = [
     status:   'soon',
     line:     'Raft, as sound. Leader election and log replication you can hear.',
     tags:     ['raft', 'consensus'],
+    minutes:  5,
     art:      'choir',
   },
   {
@@ -185,20 +209,14 @@ export const playgrounds = [
     status:   'soon',
     line:     'Rake a B-tree. B-trees, hash rings and heaps, arranged calmly.',
     tags:     ['b-trees', 'hash rings', 'heaps'],
+    minutes:  5,
     art:      'zen',
-  },
-  {
-    name:     'Slow Packet',
-    path:     null,
-    status:   'soon',
-    line:     "One packet's long trip: DNS → TCP → NAT → conntrack → socket, slowly.",
-    tags:     ['dns', 'tcp', 'nat', 'conntrack'],
-    art:      'slow',
   },
 ]
 
 export const contact = {
-  email:    null,   // set to a string to render it; left off deliberately
+  email:    'vaibhavbhardwaaj@gmail.com',
+  phone:    '+91 75057 25957',   // rendered as a tel: link; spaces are stripped for the href
   github:   'https://github.com/VA-ibh-AV',
   linkedin: 'https://www.linkedin.com/in/vaibhav-bhardwaj-a0554a1b8/',
 }

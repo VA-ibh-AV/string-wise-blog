@@ -57,10 +57,23 @@ function Art({ kind }) {
           <circle cx="210" cy="48" r="9" fill="#46546a" stroke="none" />
         </g>
       )}
-      {kind === 'slow' && (
+      {kind === 'drift' && (
         <g>
-          <path d="M30 60 C 90 20, 150 90, 210 40 S 270 50, 280 44" fill="none" stroke="#6d7fc9" strokeWidth="1" strokeDasharray="3 5" />
-          <circle cx="120" cy="55" r="4" fill="#7fe0b8" />
+          <path d="M30 66 C 90 20, 150 90, 210 40 S 262 40, 276 30" fill="none" stroke="#6d7fc9" strokeWidth="1" strokeDasharray="3 5" />
+          {[[30, 66], [104, 50], [170, 58], [232, 38]].map(([x, y]) => <circle key={x} cx={x} cy={y} r="3" fill="#8fa6ff" />)}
+          <path d="M268 26 l12 4 l-12 4 l3 -4 z" fill="#ffd37a" />
+          <circle cx="276" cy="30" r="9" fill="#ffd37a" opacity=".15" />
+        </g>
+      )}
+      {kind === 'orbit' && (
+        <g>
+          {[16, 28, 40].map(r => <circle key={r} cx="150" cy="50" r={r} fill="none" stroke="rgba(255,255,255,.14)" />)}
+          <circle cx="150" cy="50" r="6" fill="#ffd37a" />
+          <circle cx="166" cy="50" r="3.5" fill="#ff8fb8" />
+          <circle cx="130" cy="30" r="4" fill="#7fe0b8" />
+          <circle cx="150" cy="90" r="4.5" fill="#8fa6ff" />
+          {[0, 1, 2, 3, 4].map(i => <rect key={i} x={36 + i * 12} y={62 - (i % 3) * 10} width="6" height={14 + (i % 3) * 10} rx="2" fill="#9d8cff" opacity=".55" />)}
+          {[0, 1, 2, 3, 4].map(i => <rect key={i} x={218 + i * 12} y={52 - ((i + 1) % 3) * 8} width="6" height={20 + ((i + 1) % 3) * 8} rx="2" fill="#5fd4e6" opacity=".45" />)}
         </g>
       )}
     </svg>
@@ -71,7 +84,7 @@ export default function PlayGrid() {
   const open = playgrounds.filter(p => p.path).length
   return (
     <Section id="play" index={5} title="Play" count={`${open} open · ${playgrounds.length - open} soon`}
-             lede={<>Calm playgrounds for systems internals at <a href={PLAY_URL} target="_blank" rel="noopener noreferrer" className="play-lede-link">play.string-wise.com ↗</a>. No score, no timer, no way to lose. Five minutes each, and you leave knowing something real.</>}>
+             lede={<>Calm playgrounds for systems internals at <a href={PLAY_URL} target="_blank" rel="noopener noreferrer" className="play-lede-link">play.string-wise.com ↗</a>. No score, no timer, no way to lose. A few minutes each, and you leave knowing something real.</>}>
       <div className="play-grid">
         {playgrounds.map((p, i) => {
           const body = (
@@ -87,7 +100,7 @@ export default function PlayGrid() {
                   {p.tags.map(t => <Tag key={t}>{t}</Tag>)}
                 </div>
                 <p className="play-meta">
-                  <span>≈5 min{p.missions ? ` · ${p.missions} missions` : ''}</span>
+                  <span>≈{p.minutes} min{p.missions ? ` · ${p.missions} missions` : ''}</span>
                   {p.path && <span className="post-arrow">play ↗</span>}
                 </p>
               </div>

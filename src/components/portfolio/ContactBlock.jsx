@@ -9,6 +9,7 @@ import { contact, profile } from '../../portfolio'
 export default function ContactBlock() {
   const links = [
     contact.email    && { label: 'email',    value: contact.email.replace(/^mailto:/, ''), href: `mailto:${contact.email}` },
+    contact.phone    && { label: 'phone',    value: contact.phone, href: `tel:${contact.phone.replace(/\s+/g, '')}` },
     contact.github   && { label: 'github',   value: contact.github.replace(/^https?:\/\//, ''), href: contact.github },
     contact.linkedin && { label: 'linkedin', value: 'in/vaibhav-bhardwaj', href: contact.linkedin },
   ].filter(Boolean)
