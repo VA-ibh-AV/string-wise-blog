@@ -1,4 +1,4 @@
-import { mulberry32 } from './rng'
+import { mulberry32 } from '../../lib/rng'
 
 /**
  * The shared retry model behind the storm simulator, the metastable loop and

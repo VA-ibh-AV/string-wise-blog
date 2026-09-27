@@ -4,78 +4,68 @@
 
 /* Every variable name here is load-bearing: the visualizers in every post read
    these tokens directly, so values may change and names never do. --green is
-   the secondary slot throughout. Dark is the default for a first-time visitor
-   — see the pre-paint script in index.html. */
+   the secondary slot throughout.
+
+   One theme only: deep space, matching play.string-wise.com. index.html pins
+   data-theme="dark" because the zinc-utility mappings at the bottom of this
+   file are keyed on it. */
 :root {
-  color-scheme: light;
-  --bg: #f7f8fc;
-  --bg-soft: #eef2f8;
-  --surface: rgba(255, 255, 255, 0.88);
-  --surface-solid: #ffffff;
-  --surface-muted: #f1f4f8;
-  --border: #d9e1eb;
-  --border-soft: #e7ecf2;
-  --ink: #101827;
-  --ink-dim: #53647a;
-  --ink-faint: #8795a8;
-  --accent: #3268df;
-  --accent-soft: #e8efff;
-  --accent-strong: #1f4fbd;
-  --green: #0b9b72;
-  --shadow: 0 24px 60px -42px rgba(23, 49, 88, 0.48);
-  --font-display: 'Inter', system-ui, sans-serif;
+  color-scheme: dark;
+  --bg: #05050f;
+  --bg-soft: #0a0a1f;
+  --surface: rgba(13, 13, 36, 0.72);
+  --surface-solid: #0c0d22;
+  --surface-muted: #111334;
+  --border: #262b58;
+  --border-soft: #1a1d42;
+  --ink: #eceefa;
+  --ink-dim: #c3c7e6;
+  --ink-faint: #8a8fb8;
+  --accent: #8fb8ff;
+  --accent-soft: #16204a;
+  --accent-strong: #b9d1ff;
+  --green: #9ef0b8;
+  --sun: #ffd37a;
+  --sun-strong: #ffe7a8;
+  --glass-edge: rgba(180, 186, 255, 0.18);
+  --shadow: 0 24px 70px -34px rgba(0, 0, 0, 0.9);
+  --font-display: 'Bricolage Grotesque', 'Avenir Next', system-ui, sans-serif;
+  --font-body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 
-  /* Code surface stays dark in both themes — it reads as a terminal either way.
-     Token colours are checked against #0d1522 for WCAG AA at 13px. */
-  --code-bg: #0d1522;
-  --code-bar: #121c2c;
-  --code-border: #22314a;
+  /* Code surfaces sit a shade deeper than the sky so a block still reads as a
+     terminal. Token colours are checked against --code-bg for WCAG AA at 13px. */
+  --code-bg: #070819;
+  --code-bar: #0c0d26;
+  --code-border: #20255a;
   --code-fg: #dbe6f5;
-  --code-faint: #7f93ae;
-  --code-accent: #7fb4ff;
-  --code-comment: #6c8199;
-  --code-punct: #93a6bf;
+  --code-faint: #8a98c4;
+  --code-accent: #8fb8ff;
+  --code-comment: #7483ad;
+  --code-punct: #9aa6cc;
   --code-red: #ff8b8b;
   --code-orange: #ffb583;
-  --code-green: #7fdba8;
+  --code-green: #9ef0b8;
   --code-cyan: #6fd3d9;
   --code-yellow: #ffd580;
   --code-purple: #c3a6ff;
 }
 
-:root[data-theme='dark'] {
-  color-scheme: dark;
-  --bg: #080c13;
-  --bg-soft: #0d1420;
-  --surface: rgba(16, 23, 35, 0.88);
-  --surface-solid: #101723;
-  --surface-muted: #121c2a;
-  --border: #243349;
-  --border-soft: #1b293b;
-  --ink: #eaf1fb;
-  --ink-dim: #9aabc0;
-  --ink-faint: #60748d;
-  --accent: #72a0ff;
-  --accent-soft: #15294f;
-  --accent-strong: #9abaff;
-  --green: #46d6a7;
-  --shadow: 0 24px 70px -34px rgba(0, 0, 0, 0.85);
-
-  /* Slightly deeper than the light theme's code surface so the block still
-     separates from the already-dark page background. */
-  --code-bg: #060a12;
-  --code-bar: #0b1220;
-  --code-border: #1c2942;
-}
-
 @layer base {
   * { box-sizing: border-box; }
 
+  /* The sky lives on html, not body: a body background would paint over the
+     z-index:-1 star layer (Starfield.jsx). Top-lit indigo plus two faint
+     nebulae; the stars are their own fixed layer so nothing repaints on scroll. */
   html {
-    background: var(--bg);
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(900px 520px at 12% -8%, rgba(120, 92, 255, 0.16), transparent 70%),
+      radial-gradient(760px 560px at 92% 18%, rgba(70, 200, 210, 0.08), transparent 70%),
+      linear-gradient(180deg, #120f33 0%, #070819 38%, #05050f 100%);
+    background-attachment: fixed;
     color: var(--ink);
-    font-family: var(--font-display);
+    font-family: var(--font-body);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -88,14 +78,6 @@
     min-height: 100vh;
     max-width: 100vw;
     overflow-x: hidden;
-    background-color: var(--bg);
-    background-image:
-      radial-gradient(700px 420px at 18% -10%, rgba(76, 125, 236, 0.12), transparent 70%),
-      radial-gradient(600px 480px at 88% 8%, rgba(74, 201, 183, 0.08), transparent 70%),
-      radial-gradient(circle, color-mix(in srgb, var(--border) 68%, transparent) 1px, transparent 1px);
-    background-size: auto, auto, 24px 24px;
-    background-attachment: fixed;
-    transition: background-color 180ms ease, color 180ms ease;
   }
 
   ::selection { background: var(--accent-soft); color: var(--accent-strong); }
@@ -111,9 +93,9 @@
     position: sticky;
     top: 0;
     z-index: 50;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border-soft);
-    backdrop-filter: blur(16px);
+    background: rgba(8, 8, 26, 0.62);
+    border-bottom: 1px solid var(--glass-edge);
+    backdrop-filter: blur(16px) saturate(1.2);
   }
 
   .site-header-inner, .site-footer-inner, .home-page {
@@ -146,12 +128,12 @@
     justify-content: center;
     width: 30px;
     height: 30px;
-    border: 1px solid var(--accent);
-    border-radius: 9px;
-    color: var(--accent);
+    border: 1px solid color-mix(in srgb, var(--sun) 70%, transparent);
+    border-radius: 999px;
+    color: var(--sun);
     font-size: 10px;
     letter-spacing: -0.08em;
-    box-shadow: inset 0 0 0 4px var(--accent-soft);
+    box-shadow: 0 0 18px -4px color-mix(in srgb, var(--sun) 55%, transparent), inset 0 0 0 4px rgba(255, 211, 122, 0.08);
   }
 
   .brand-context { color: var(--ink-faint); font-size: 11px; font-weight: 400; letter-spacing: 0; }
@@ -162,23 +144,6 @@
   .nav-link:hover span { transform: translate(2px, -2px); }
   .nav-divider { width: 1px; height: 22px; background: var(--border); }
 
-  .theme-toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    padding: 0;
-    border: 1px solid var(--border);
-    border-radius: 9px;
-    background: var(--surface-muted);
-    color: var(--ink-dim);
-    cursor: pointer;
-    transition: color 150ms ease, border-color 150ms ease, transform 150ms ease;
-  }
-  .theme-toggle:hover { color: var(--accent); border-color: var(--accent); transform: translateY(-1px); }
-  .theme-toggle svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-
   .hero-section {
     display: grid;
     grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
@@ -186,7 +151,9 @@
     align-items: end;
     padding: 104px 0 92px;
     border-bottom: 1px solid var(--border-soft);
+    position: relative;
   }
+  .hero-copy, .hero-aside { position: relative; z-index: 1; }
 
   .eyebrow, .micro-label, .post-index, .post-date, .reading-time, .section-count, .footer-end {
     font-family: var(--font-mono);
@@ -194,18 +161,18 @@
   .eyebrow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 24px; color: var(--ink-faint); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
   .eyebrow span:not(.eyebrow-dot) { color: var(--border); }
   .eyebrow-dot, .live-badge span { width: 7px; height: 7px; display: inline-block; border-radius: 999px; background: var(--green); box-shadow: 0 0 0 4px color-mix(in srgb, var(--green) 14%, transparent); }
-  .hero-copy h1 { margin: 0; color: var(--ink); font-family: var(--font-mono); font-size: clamp(44px, 7vw, 82px); font-weight: 700; letter-spacing: -0.09em; line-height: 0.98; }
-  .hero-copy h1 em { color: var(--accent); font-style: normal; }
+  .hero-copy h1 { margin: 0; color: var(--ink); font-family: var(--font-display); font-size: clamp(46px, 7.4vw, 88px); font-weight: 700; letter-spacing: -0.025em; line-height: 0.98; }
+  .hero-copy h1 em { color: var(--sun); font-style: normal; text-shadow: 0 0 34px rgba(255, 211, 122, 0.35); }
   .hero-description { max-width: 590px; margin: 28px 0 0; color: var(--ink-dim); font-size: 18px; line-height: 1.7; }
   .hero-actions { display: flex; align-items: center; gap: 14px; margin-top: 34px; flex-wrap: wrap; }
   .primary-action, .secondary-action { display: inline-flex; align-items: center; gap: 12px; min-height: 42px; padding: 0 16px; border-radius: 8px; font-family: var(--font-mono); font-size: 11px; transition: transform 150ms ease, border-color 150ms ease, background 150ms ease; }
-  .primary-action { background: var(--accent); color: #fff; box-shadow: 0 10px 22px -14px var(--accent); }
-  .primary-action:hover { transform: translateY(-2px); background: var(--accent-strong); }
-  .secondary-action { border: 1px solid var(--border); color: var(--ink-dim); background: var(--surface); }
+  .primary-action { background: var(--sun); color: #16122e; font-weight: 600; box-shadow: 0 10px 30px -12px rgba(255, 211, 122, 0.6); }
+  .primary-action:hover { transform: translateY(-2px); background: var(--sun-strong); }
+  .secondary-action { border: 1px solid var(--glass-edge); color: var(--ink-dim); background: var(--surface); backdrop-filter: blur(8px); }
   .secondary-action:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
 
   .hero-aside { padding-bottom: 4px; }
-  .signal-card { padding: 18px; border: 1px solid var(--border); border-radius: 12px; background: linear-gradient(145deg, var(--surface-solid), var(--surface-muted)); box-shadow: var(--shadow); }
+  .signal-card { padding: 18px; border: 1px solid var(--glass-edge); border-radius: 14px; background: rgba(12, 12, 34, 0.7); backdrop-filter: blur(10px); box-shadow: var(--shadow); }
   .signal-card-top, .signal-line { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
   .signal-card-top { padding-bottom: 18px; border-bottom: 1px solid var(--border-soft); }
   .micro-label { margin: 0; color: var(--ink-faint); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; }
@@ -218,7 +185,7 @@
      and a slow offset breathe — the only place the studio reference is literal,
      and it is still just a bar chart. */
   .signal-wave { display: flex; align-items: center; gap: 4px; height: 34px; margin-top: 16px; }
-  .signal-wave i { flex: 1; height: 8px; border-radius: 3px; background: var(--accent); opacity: .22; transform-origin: center; animation: wave-breathe 3.4s ease-in-out infinite; }
+  .signal-wave i { flex: 1; height: 8px; border-radius: 3px; background: linear-gradient(180deg, var(--sun-strong), var(--accent)); opacity: .22; transform-origin: center; animation: wave-breathe 3.4s ease-in-out infinite; }
   .signal-wave i:nth-child(2), .signal-wave i:nth-child(11) { height: 15px; opacity: .35; animation-delay: -.35s; }
   .signal-wave i:nth-child(3), .signal-wave i:nth-child(10) { height: 24px; opacity: .5; animation-delay: -.7s; }
   .signal-wave i:nth-child(4), .signal-wave i:nth-child(9) { height: 32px; opacity: .82; animation-delay: -1.05s; }
@@ -228,35 +195,38 @@
 
   .library-section { padding: 82px 0 110px; }
   .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 26px; }
-  .section-heading h2 { margin: 10px 0 0; color: var(--ink); font-family: var(--font-mono); font-size: 25px; letter-spacing: -0.06em; }
+  .section-heading h2 { margin: 10px 0 0; color: var(--ink); font-family: var(--font-display); font-size: 32px; font-weight: 700; letter-spacing: -0.03em; }
+  .micro-star { margin-right: 7px; color: var(--sun); }
   .section-count { color: var(--ink-faint); font-size: 11px; }
   .post-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
   .post-card-link { display: block; min-width: 0; }
-  .post-card { display: flex; min-height: 270px; flex-direction: column; padding: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); box-shadow: 0 10px 30px -30px rgba(26, 55, 97, .4); animation: card-in 450ms both; transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease; }
+  .post-card { display: flex; min-height: 270px; flex-direction: column; padding: 20px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); backdrop-filter: blur(8px); box-shadow: 0 10px 30px -30px rgba(0, 0, 0, .8); animation: card-in 450ms both; transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease; }
   /* The grid child is .post-card-link (the anchor), not .post-card, so putting
      grid-column on the card itself never did anything. The featured card is
      always the first one — PostCard keys it off index === 0 — so target that. */
   .post-grid > *:first-child { grid-column: span 2; }
-  .post-card-featured { min-height: 250px; background: linear-gradient(130deg, color-mix(in srgb, var(--surface-solid) 90%, var(--accent-soft)), var(--surface)); }
-  .post-card:hover { border-color: color-mix(in srgb, var(--accent) 65%, var(--border)); box-shadow: 0 22px 45px -32px color-mix(in srgb, var(--accent) 45%, transparent); transform: translateY(-4px); }
+  .post-card-featured { min-height: 250px; background: radial-gradient(120% 140% at 100% 0%, rgba(120, 92, 255, 0.22), transparent 60%), var(--surface); }
+  .post-card:hover { border-color: color-mix(in srgb, var(--accent) 60%, var(--border)); box-shadow: 0 22px 50px -26px color-mix(in srgb, var(--accent) 55%, transparent); transform: translateY(-4px); }
   .post-card-top, .post-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
   .post-index, .post-date { color: var(--ink-faint); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; }
   .post-card-body { margin: auto 0; padding: 34px 0 30px; }
-  .post-card-body h3 { margin: 0 0 13px; color: var(--ink); font-family: var(--font-mono); font-size: 18px; letter-spacing: -0.055em; line-height: 1.25; }
-  .post-card-featured .post-card-body h3 { font-size: clamp(22px, 3vw, 31px); }
+  .post-card-body h3 { margin: 0 0 13px; color: var(--ink); font-family: var(--font-display); font-size: 21px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.25; }
+  .post-card-featured .post-card-body h3 { font-size: clamp(24px, 3.2vw, 34px); }
   .post-arrow { display: inline-block; margin-left: 8px; color: var(--accent); font-size: .8em; transition: transform 150ms ease; }
   .post-card:hover .post-arrow { transform: translate(3px, -3px); }
   .post-card-body p { max-width: 720px; margin: 0; color: var(--ink-dim); font-size: 14px; line-height: 1.7; }
   .post-card-footer { align-items: end; }
   .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
-  .tag { display: inline-flex; align-items: center; padding: 5px 8px; border: 1px solid var(--border); border-radius: 5px; background: var(--surface-muted); color: var(--ink-dim); font-family: var(--font-mono); font-size: 10px; }
+  .tag { display: inline-flex; align-items: center; padding: 5px 8px; border: 1px solid var(--border); border-radius: 999px; background: rgba(22, 24, 60, 0.6); color: var(--ink-dim); font-family: var(--font-mono); font-size: 10px; }
   .reading-time { color: var(--ink-faint); font-size: 10px; white-space: nowrap; }
   .reading-time span { color: var(--ink-faint); }
 
-  .site-footer { border-top: 1px solid var(--border); background: color-mix(in srgb, var(--surface-solid) 72%, transparent); }
+  .site-footer { position: relative; border-top: 1px solid var(--glass-edge); background: rgba(6, 6, 20, 0.7); backdrop-filter: blur(10px); }
+  /* horizon: a thin sunrise along the top edge of the footer */
+  .site-footer::before { content: ''; position: absolute; left: 10%; right: 10%; top: -1px; height: 1px; background: linear-gradient(90deg, transparent, var(--sun), transparent); opacity: .55; }
   .site-footer-inner { display: grid; grid-template-columns: 1fr 1fr auto; gap: 32px; padding: 40px 0; }
-  .footer-brand { margin: 0 0 8px; color: var(--ink); font-family: var(--font-mono); font-size: 15px; font-weight: 700; }
-  .footer-brand span { color: var(--accent); }
+  .footer-brand { margin: 0 0 8px; color: var(--ink); font-family: var(--font-display); font-size: 18px; font-weight: 700; }
+  .footer-brand span { color: var(--sun); }
   .footer-copy { margin: 0; color: var(--ink-faint); font-size: 11px; }
   .footer-copy a, .footer-links a { color: var(--accent); }
   .footer-copy a:hover, .footer-links a:hover { text-decoration: underline; text-underline-offset: 3px; }
@@ -266,7 +236,8 @@
 
   /* margin-inline here, not only Tailwind's mx-auto on the article, so the
      loading skeleton lands in the same column instead of hugging the left edge. */
-  .article-shell { max-width: 820px !important; margin-inline: auto; padding: 70px 24px 100px !important; color: var(--ink); }
+  /* Posts read on a calm, near-opaque panel: the sky shows only around it. */
+  .article-shell { max-width: 860px !important; margin: 40px auto 80px; padding: 56px 44px 90px !important; color: var(--ink); border: 1px solid var(--glass-edge); border-radius: 22px; background: rgba(9, 10, 28, 0.94); box-shadow: 0 40px 120px -60px rgba(0, 0, 0, 0.9); }
   .skeleton-bar { border-radius: 6px; background: linear-gradient(90deg, var(--surface-muted), var(--border-soft), var(--surface-muted)); background-size: 200% 100%; animation: skeleton-sweep 1.4s ease-in-out infinite; }
   @media (prefers-reduced-motion: reduce) { .skeleton-bar { animation: none; } }
   .article-shell > * { min-width: 0; max-width: 100%; }
@@ -274,7 +245,8 @@
   .back-link { display: inline-flex; margin-bottom: 30px; color: var(--ink-faint); font-family: var(--font-mono); font-size: 11px; transition: color 150ms ease; }
   .back-link:hover { color: var(--accent); }
   .post-header-meta { display: flex; gap: 10px; margin-bottom: 18px; color: var(--ink-faint); font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; }
-  .post-header h1 { margin: 0 0 22px; color: var(--ink); font-family: var(--font-mono); font-size: clamp(30px, 5vw, 52px); letter-spacing: -.075em; line-height: 1.05; }
+  .post-header h1 { margin: 0 0 22px; color: var(--ink); font-family: var(--font-display); font-size: clamp(32px, 5.2vw, 56px); font-weight: 700; letter-spacing: -.035em; line-height: 1.05; }
+  .article-shell.prose h2, .article-shell.prose h3 { font-family: var(--font-display); letter-spacing: -.02em; }
   .post-header hr { margin-top: 38px; border: 0; border-top: 1px solid var(--border); }
   .article-shell.prose { --tw-prose-body: var(--ink-dim); --tw-prose-headings: var(--ink); --tw-prose-links: var(--accent); --tw-prose-bold: var(--ink); --tw-prose-counters: var(--ink-faint); --tw-prose-bullets: var(--accent); --tw-prose-hr: var(--border); --tw-prose-quotes: var(--ink); --tw-prose-quote-borders: var(--accent); --tw-prose-captions: var(--ink-faint); --tw-prose-code: var(--accent); --tw-prose-pre-code: var(--code-fg); --tw-prose-pre-bg: var(--code-bg); }
   .article-shell.prose p, .article-shell.prose li { color: var(--ink-dim); }
@@ -332,14 +304,14 @@
   .code-block-pre .token.bold { font-weight: 600; }
   .code-block-pre .token.italic { font-style: italic; }
   .not-found { width: min(1120px, calc(100% - 48px)); margin: 0 auto; padding: 140px 0; text-align: center; }
-  .not-found h1 { margin: 14px 0 24px; color: var(--ink); font-family: var(--font-mono); font-size: 34px; letter-spacing: -.07em; }
+  .not-found h1 { margin: 14px 0 24px; color: var(--ink); font-family: var(--font-display); font-size: 40px; letter-spacing: -.03em; }
 
   /* Interactive visualizers */
   .btn-sim { @apply px-3 py-1.5 text-xs font-mono rounded-md border bg-white text-zinc-700 hover:bg-zinc-50 active:scale-95 transition-all duration-100 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed; border-color: var(--border); background: var(--surface-solid); color: var(--ink-dim); }
   .btn-sim-accent { @apply px-3 py-1.5 text-xs font-mono rounded-md border active:scale-95 transition-all duration-100 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed; border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); background: var(--accent-soft); color: var(--accent-strong); }
   .btn-sim-danger { @apply px-3 py-1.5 text-xs font-mono rounded-md border active:scale-95 transition-all duration-100 cursor-pointer; border-color: color-mix(in srgb, #ef4444 35%, var(--border)); background: color-mix(in srgb, #ef4444 10%, var(--surface-solid)); color: #ef6b73; }
   .btn-sim-success { @apply px-3 py-1.5 text-xs font-mono rounded-md border active:scale-95 transition-all duration-100 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed; border-color: color-mix(in srgb, var(--green) 45%, var(--border)); background: color-mix(in srgb, var(--green) 10%, var(--surface-solid)); color: var(--green); }
-  .viz-card { @apply my-10 rounded-2xl border p-6 shadow-sm; border-color: var(--border); background: linear-gradient(145deg, var(--surface-solid), var(--surface-muted)); color: var(--ink); }
+  .viz-card { @apply my-10 rounded-2xl border p-6 shadow-sm; border-color: var(--border); background: linear-gradient(145deg, #0e1030, #0a0b22); color: var(--ink); }
   .viz-title { @apply font-mono text-sm font-semibold uppercase tracking-widest mb-5; color: var(--ink-faint); }
   .stat-card { @apply rounded-xl border p-4; border-color: var(--border); background: var(--surface-muted); }
   .stat-value { @apply text-2xl font-mono font-semibold; color: var(--ink); }
@@ -442,7 +414,7 @@
 
   /* skills */
   .skill-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-  .skill-group { padding: 18px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+  .skill-group { padding: 18px; border: 1px solid var(--glass-edge); border-radius: 14px; background: var(--surface); backdrop-filter: blur(8px); }
   .skill-group h3 { margin: 0 0 14px; color: var(--ink-faint); font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
   .skill-items { display: flex; flex-wrap: wrap; gap: 6px; }
 
@@ -455,7 +427,7 @@
   .tl-place { color: var(--ink-faint); font-family: var(--font-mono); font-size: 10px; }
   .tl-current { display: inline-flex; align-items: center; gap: 7px; color: var(--green); font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
   .tl-current::before { content: ''; width: 5px; height: 5px; border-radius: 999px; background: var(--green); }
-  .tl-role { margin: 0 0 4px; color: var(--ink); font-family: var(--font-mono); font-size: 16px; letter-spacing: -.03em; }
+  .tl-role { margin: 0 0 4px; color: var(--ink); font-family: var(--font-display); font-size: 20px; font-weight: 600; letter-spacing: -.02em; }
   .tl-company { margin: 0 0 14px; color: var(--accent); font-family: var(--font-mono); font-size: 12px; }
   .tl-bullets { margin: 0; padding: 0; list-style: none; display: grid; gap: 9px; }
   .tl-bullets li { position: relative; padding-left: 18px; color: var(--ink-dim); font-size: 14px; line-height: 1.7; }
@@ -463,20 +435,19 @@
 
   /* projects */
   .proj-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-  .proj-card { display: flex; flex-direction: column; height: 100%; padding: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease; }
-  a.proj-card:hover { border-color: color-mix(in srgb, var(--accent) 65%, var(--border)); box-shadow: 0 22px 45px -32px color-mix(in srgb, var(--accent) 45%, transparent); transform: translateY(-4px); }
+  .proj-card { display: flex; flex-direction: column; height: 100%; padding: 20px; border: 1px solid var(--glass-edge); border-radius: 14px; background: var(--surface); backdrop-filter: blur(8px); transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease; }
+  a.proj-card:hover { border-color: color-mix(in srgb, var(--sun) 55%, var(--border)); box-shadow: 0 22px 50px -28px rgba(255, 211, 122, 0.4); transform: translateY(-4px); }
   .proj-top { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 16px; }
   .proj-status { color: var(--ink-faint); font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
-  .proj-name { margin: 0 0 10px; color: var(--ink); font-family: var(--font-mono); font-size: 17px; letter-spacing: -.045em; }
+  .proj-name { margin: 0 0 10px; color: var(--ink); font-family: var(--font-display); font-size: 20px; font-weight: 600; letter-spacing: -.02em; }
   .proj-blurb { margin: 0 0 14px; color: var(--ink-dim); font-size: 14px; line-height: 1.7; }
   .proj-hard { margin: 0 0 18px; padding-left: 12px; border-left: 2px solid color-mix(in srgb, var(--accent) 45%, var(--border)); color: var(--ink-faint); font-size: 13px; line-height: 1.6; }
   .proj-hard b { color: var(--ink-dim); font-weight: 500; }
   .proj-card .tag-list { margin-top: auto; }
 
-  /* play — cards for play.string-wise.com. The sky strip is always night,
-     like code blocks, so it reads as "a playground" in either theme. */
+  /* play — cards for play.string-wise.com, each with a small sky of its own. */
   .play-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-  .play-card { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); animation: card-in 450ms both; transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease; }
+  .play-card { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--glass-edge); border-radius: 14px; background: var(--surface); backdrop-filter: blur(8px); animation: card-in 450ms both; transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease; }
   a.play-card:hover { border-color: color-mix(in srgb, #ffd37a 55%, var(--border)); box-shadow: 0 22px 45px -30px rgba(255, 211, 122, .35); transform: translateY(-4px); }
   a.play-card:hover .post-arrow { transform: translate(3px, -3px); }
   .play-card-soon .play-body { opacity: .6; } /* not on the card: card-in ends at opacity 1 there */
@@ -488,7 +459,7 @@
   .play-body .proj-top { align-items: flex-start; margin-bottom: 8px; }
   .play-name { margin: 0; }
   .play-badge { flex-shrink: 0; padding: 2px 8px; border: 1px solid var(--border); border-radius: 999px; color: var(--ink-faint); font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; }
-  .play-badge-live { border-color: color-mix(in srgb, #e0a92e 60%, var(--border)); color: #d4a02a; }
+  .play-badge-live { border-color: color-mix(in srgb, var(--sun) 60%, var(--border)); color: var(--sun); }
   .play-meta { display: flex; align-items: center; justify-content: space-between; margin: auto 0 0; padding-top: 16px; color: var(--ink-faint); font-family: var(--font-mono); font-size: 11px; }
   .play-body .tag-list { margin-bottom: 0; }
   .play-lede-link { color: var(--accent); }
@@ -496,7 +467,7 @@
 
   /* contact */
   .contact-grid { display: flex; flex-wrap: wrap; gap: 10px; }
-  .contact-link { display: inline-flex; align-items: center; gap: 10px; padding: 13px 17px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: var(--font-mono); font-size: 12px; transition: border-color 150ms ease, color 150ms ease, transform 150ms ease; }
+  .contact-link { display: inline-flex; align-items: center; gap: 10px; padding: 13px 17px; border: 1px solid var(--glass-edge); border-radius: 999px; background: var(--surface); backdrop-filter: blur(8px); color: var(--ink); font-family: var(--font-mono); font-size: 12px; transition: border-color 150ms ease, color 150ms ease, transform 150ms ease; }
   .contact-link:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
   .contact-link span { color: var(--ink-faint); font-size: 10px; text-transform: uppercase; letter-spacing: .1em; }
   .contact-link:hover span { color: var(--accent); }
@@ -504,8 +475,20 @@
 
   /* Guard for placeholder copy left in src/portfolio.js. Nothing uses it while
      the content is complete — it exists so a future TODO cannot ship quietly. */
-  .pf-todo { color: #c2410c; text-decoration: underline dotted currentColor; text-underline-offset: 3px; }
-  :root[data-theme='dark'] .pf-todo { color: #f87f6a; }
+  .pf-todo { color: #f87f6a; text-decoration: underline dotted currentColor; text-underline-offset: 3px; }
+
+  /* ---- Sky ---------------------------------------------------------------- */
+
+  /* Fixed star layer behind everything (Starfield.jsx). */
+  .starfield { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+  .starfield svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .star { fill: #ffffff; }
+  .star-twinkle { animation: twinkle 5s ease-in-out infinite; }
+  .shooting-star { position: absolute; top: 12%; left: 70%; width: 120px; height: 1px; border-radius: 999px; background: linear-gradient(90deg, rgba(255, 255, 255, 0.9), transparent); opacity: 0; transform: rotate(-24deg); animation: shoot 13s ease-in 4s infinite; }
+
+  /* Hero orbit system, drawn behind the signal card. */
+  .hero-orbits { position: absolute; z-index: 0; right: -110px; top: -120px; width: 560px; max-width: 70%; pointer-events: none; opacity: .9; }
+  .hero-orbits .orbit-ring { fill: none; stroke: rgba(180, 186, 255, 0.14); stroke-width: 1; }
 }
 
 /* The article and simulators contain Tailwind utility classes from the original UI.
@@ -520,6 +503,13 @@
 
 @keyframes card-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes wave-breathe { 0%, 100% { transform: scaleY(.72); } 50% { transform: scaleY(1.18); } }
+@keyframes twinkle { 0%, 100% { opacity: .9; } 50% { opacity: .25; } }
+@keyframes shoot {
+  0% { opacity: 0; transform: translate(0, 0) rotate(-24deg); }
+  2% { opacity: 1; }
+  7% { opacity: 0; transform: translate(-360px, 160px) rotate(-24deg); }
+  100% { opacity: 0; transform: translate(-360px, 160px) rotate(-24deg); }
+}
 
 /* Motion is decoration here — the staggered card entrance and the level meter
    both carry no information, so drop them rather than reduce them. */
@@ -527,6 +517,8 @@
   .post-card, .proj-card, .play-card { animation: none !important; transform: none !important; }
   .post-card, .proj-card { opacity: 1 !important; }
   .signal-wave i { animation: none !important; transform: none !important; }
+  .star-twinkle { animation: none !important; }
+  .shooting-star { display: none; }
 }
 @keyframes skeleton-sweep { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 
@@ -543,7 +535,8 @@
   .post-grid > *:first-child { grid-column: auto; }
   .site-footer-inner { grid-template-columns: 1fr; gap: 26px; }
   .footer-end { text-align: left; }
-  .article-shell { padding-top: 48px !important; }
+  .article-shell { margin: 16px 10px 48px; padding: 36px 18px 64px !important; border-radius: 16px; }
+  .hero-orbits { right: -200px; top: -70px; width: 420px; max-width: none; opacity: .4; }
   .pf-section { padding: 54px 0; }
   .skill-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .proj-grid { grid-template-columns: 1fr; }

@@ -1,58 +1,17 @@
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { contact } from '../portfolio'
+import Starfield from './Starfield'
 
 const LINKEDIN_URL = contact.linkedin
 
 export default function Layout({ children }) {
   return (
     <div className="site-shell">
+      <Starfield />
       <Nav />
       <main className="site-main">{children}</main>
       <Footer />
     </div>
-  )
-}
-
-function ThemeToggle() {
-  // Must match what the inline script in index.html already applied, or
-  // hydration of the prerendered markup mismatches on the first paint.
-  // Dark-first: only an explicitly saved 'light' opts out.
-  const [theme, setTheme] = useState(() => {
-    if (typeof window === 'undefined') return 'dark'
-    try {
-      return window.localStorage.getItem('string-wise-theme') === 'light' ? 'light' : 'dark'
-    } catch {
-      return 'dark'
-    }
-  })
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme
-    window.localStorage.setItem('string-wise-theme', theme)
-  }, [theme])
-
-  const isDark = theme === 'dark'
-
-  return (
-    <button
-      type="button"
-      className="theme-toggle"
-      onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
-      title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
-    >
-      {isDark ? (
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="12" cy="12" r="4" />
-          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
-        </svg>
-      ) : (
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M20.6 15.3A8.5 8.5 0 0 1 8.7 3.4 8.5 8.5 0 1 0 20.6 15.3Z" />
-        </svg>
-      )}
-    </button>
   )
 }
 
@@ -81,8 +40,6 @@ function Nav() {
           <a href="https://raft.string-wise.com" target="_blank" rel="noopener noreferrer" className="nav-link nav-link-ext">
             raft <span>↗</span>
           </a>
-          <span className="nav-divider" aria-hidden="true" />
-          <ThemeToggle />
         </nav>
       </div>
     </header>

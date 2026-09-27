@@ -9,7 +9,7 @@ export default function Section({ id, index, title, count, lede, children }) {
     <section id={id} className="pf-section">
       <div className="section-heading">
         <div>
-          <p className="micro-label">{String(index).padStart(2, '0')} / {title.toLowerCase()}</p>
+          <p className="micro-label"><span className="micro-star" aria-hidden="true">✦</span>{String(index).padStart(2, '0')} / {title.toLowerCase()}</p>
           <h2>{title}</h2>
         </div>
         {count != null && <span className="section-count">{count}</span>}

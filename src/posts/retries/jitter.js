@@ -1,4 +1,4 @@
-import { mulberry32 } from './rng'
+import { mulberry32 } from '../../lib/rng'
 
 /**
  * Section 3: 50 clients all fail at t=0 against a server that can accept
