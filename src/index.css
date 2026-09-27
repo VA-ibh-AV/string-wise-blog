@@ -237,10 +237,14 @@
   /* margin-inline here, not only Tailwind's mx-auto on the article, so the
      loading skeleton lands in the same column instead of hugging the left edge. */
   /* Posts read on a calm, near-opaque panel: the sky shows only around it. */
-  .article-shell { max-width: 860px !important; margin: 40px auto 80px; padding: 56px 44px 90px !important; color: var(--ink); border: 1px solid var(--glass-edge); border-radius: 22px; background: rgba(9, 10, 28, 0.94); box-shadow: 0 40px 120px -60px rgba(0, 0, 0, 0.9); }
+  .article-shell { max-width: 1180px !important; margin: 40px auto 80px; padding: 56px 44px 90px !important; color: var(--ink); border: 1px solid var(--glass-edge); border-radius: 22px; background: rgba(9, 10, 28, 0.94); box-shadow: 0 40px 120px -60px rgba(0, 0, 0, 0.9); }
   .skeleton-bar { border-radius: 6px; background: linear-gradient(90deg, var(--surface-muted), var(--border-soft), var(--surface-muted)); background-size: 200% 100%; animation: skeleton-sweep 1.4s ease-in-out infinite; }
   @media (prefers-reduced-motion: reduce) { .skeleton-bar { animation: none; } }
   .article-shell > * { min-width: 0; max-width: 100%; }
+  /* The panel is wide so visualizers and code get room; running text stays in
+     a ~75-character column down the middle, which is what keeps it readable. */
+  .article-shell > .post-header,
+  .article-shell > section > :is(p, ul, ol, h2, h3, h4, blockquote, hr) { max-width: 780px; margin-inline: auto; }
   .article-shell .post-header { margin-bottom: 58px; }
   .back-link { display: inline-flex; margin-bottom: 30px; color: var(--ink-faint); font-family: var(--font-mono); font-size: 11px; transition: color 150ms ease; }
   .back-link:hover { color: var(--accent); }
